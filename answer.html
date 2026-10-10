@@ -1,16 +1,14 @@
-html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#090b10">
+  <meta name="description" content="ONE Search — explore information in your own words.">
   <title>ONE Search</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     :root {
       color-scheme: dark;
@@ -32,9 +30,9 @@ html
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    button, input {
-      font: inherit;
-    }
+    button, input, select { font: inherit; }
+
+    button { cursor: pointer; }
 
     .topbar {
       width: min(1100px, 92%);
@@ -51,9 +49,7 @@ html
       letter-spacing: -1.5px;
     }
 
-    .logo span {
-      color: var(--accent);
-    }
+    .logo span, h1 span { color: var(--accent); }
 
     .status {
       font-size: 12px;
@@ -81,10 +77,6 @@ html
       margin: 0 0 16px;
     }
 
-    h1 span {
-      color: var(--accent);
-    }
-
     .subtitle {
       color: var(--muted);
       line-height: 1.7;
@@ -94,7 +86,7 @@ html
 
     .search-panel {
       padding: 10px;
-      background: rgba(18, 22, 32, 0.94);
+      background: rgba(18, 22, 32, .94);
       border: 1px solid #34394b;
       border-radius: 20px;
       box-shadow: 0 15px 55px #00000035;
@@ -123,9 +115,7 @@ html
       font-size: 16px;
     }
 
-    #query::placeholder {
-      color: #7e879b;
-    }
+    #query::placeholder { color: #7e879b; }
 
     .search-button {
       border: 0;
@@ -134,17 +124,30 @@ html
       padding: 14px 20px;
       border-radius: 13px;
       font-weight: 750;
-      cursor: pointer;
     }
 
-    .search-button:hover {
-      background: #c4b5fd;
-    }
+    .search-button:hover { background: #c4b5fd; }
 
-    .search-button:focus-visible,
-    #query:focus-visible {
+    button:focus-visible, input:focus-visible, select:focus-visible {
       outline: 2px solid white;
       outline-offset: 3px;
+    }
+
+    .tools {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    #language {
+      color: var(--text);
+      background: #151925;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 9px 12px;
     }
 
     .quick-searches {
@@ -152,7 +155,7 @@ html
       flex-wrap: wrap;
       justify-content: center;
       gap: 9px;
-      margin-top: 18px;
+      margin-top: 14px;
     }
 
     .quick-searches button {
@@ -161,7 +164,6 @@ html
       border: 1px solid var(--border);
       border-radius: 30px;
       padding: 9px 13px;
-      cursor: pointer;
     }
 
     .quick-searches button:hover {
@@ -188,12 +190,49 @@ html
       margin: 0;
     }
 
-    /*
-      Google Programmable Search renders its own results here.
-      Provider-required branding is intentionally not hidden.
-    */
-    .gcse-search {
-      min-height: 70px;
+    #results {
+      display: grid;
+      gap: 12px;
+    }
+
+    .result {
+      padding: 17px;
+      border: 1px solid var(--border);
+      background: #141925;
+      border-radius: 13px;
+    }
+
+    .result a {
+      color: #c4b5fd;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.5;
+      text-decoration: none;
+    }
+
+    .result a:hover { text-decoration: underline; }
+
+    .result-url {
+      display: block;
+      color: #82c9a5;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+      margin: 7px 0;
+    }
+
+    .result p {
+      color: #b8bfd0;
+      font-size: 14px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    #searchMessage {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: center;
+      margin: 17px 0 0;
     }
 
     .footer {
@@ -205,55 +244,30 @@ html
     }
 
     @media (max-width: 520px) {
-      main {
-        padding-top: 45px;
-      }
-
-      .topbar {
-        padding: 18px 0;
-      }
-
-      .status {
-        font-size: 10px;
-      }
-
-      .search-panel {
-        padding: 8px;
-      }
-
-      #query {
-        font-size: 14px;
-      }
-
-      .search-button {
-        padding: 13px 12px;
-      }
-
-      .results-box {
-        padding: 12px;
-      }
+      main { padding-top: 45px; }
+      .topbar { padding: 18px 0; }
+      .status { font-size: 10px; }
+      .search-panel { padding: 8px; }
+      #query { font-size: 14px; }
+      .search-button { padding: 13px 12px; }
+      .results-box { padding: 12px; }
+      .result { padding: 13px; }
     }
   </style>
-
-  <!-- ONE's current Google Programmable Search engine -->
-  <script async
-    src="https://cse.google.com/cse.js?cx=75d11abaa686948f9">
-  </script>
 </head>
 
 <body>
   <header class="topbar">
     <div class="logo">ONE<span>.</span></div>
-    <div class="status">SEARCH EXPERIENCE</div>
+    <div class="status">INDEPENDENT SEARCH PROJECT</div>
   </header>
 
   <main>
     <section class="hero">
       <h1>Search beyond<br><span>limits.</span></h1>
       <p class="subtitle">
-        One place to explore information, discover websites
-        and learn something new. Hindi, Hinglish or English —
-        search in your own words.
+        Explore information and learn something new.
+        Hindi, Hinglish or English — search in your own words.
       </p>
     </section>
 
@@ -266,91 +280,160 @@ html
           placeholder="Ask or search anything..."
           aria-label="Enter your search"
           autocomplete="off"
+          maxlength="150"
           required
         >
-        <button class="search-button" type="submit">
+        <button class="search-button" id="searchButton" type="submit">
           Search
         </button>
       </form>
     </section>
 
+    <div class="tools">
+      <label for="language" class="hint">Language:</label>
+      <select id="language" aria-label="Search language">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+    </div>
+
     <div class="quick-searches" aria-label="Suggested searches">
-      <button type="button" data-query="Python kya hai">
-        Python kya hai
-      </button>
-      <button type="button" data-query="Space facts">
-        Space facts
-      </button>
-      <button type="button" data-query="Learn English">
-        Learn English
-      </button>
+      <button type="button" data-query="Python programming language">Python</button>
+      <button type="button" data-query="Space facts">Space facts</button>
+      <button type="button" data-query="Learn English">Learn English</button>
     </div>
 
     <h2 class="results-heading">Explore results</h2>
 
     <section class="results-box" aria-label="Search results">
-      <div class="gcse-search"></div>
-      <p class="hint">
-        Search results are supplied by the configured search provider.
-        Available results depend on your search engine settings.
-      </p>
+      <div id="results">
+        <p class="hint">
+          Search to discover matching Wikipedia articles.
+          This first version searches Wikipedia, not the entire web.
+        </p>
+      </div>
+      <p id="searchMessage" role="status" aria-live="polite"></p>
     </section>
 
     <footer class="footer">
       ONE Search · Built for curious minds<br>
-      Search results may come from external websites.
-      Always check the original source.
+      Results are provided by Wikipedia. Open an article to read its source.
     </footer>
   </main>
 
   <script>
-    const searchInput = document.getElementById("query");
+    const API_URL =
+      "https://dbpbkvfaxgifjeveijqf.supabase.co/functions/v1/one-search";
 
-    function runOneSearch(value) {
-      const query = value.trim();
+    const form = document.getElementById("oneForm");
+    const input = document.getElementById("query");
+    const language = document.getElementById("language");
+    const resultsBox = document.getElementById("results");
+    const message = document.getElementById("searchMessage");
+    const searchButton = document.getElementById("searchButton");
 
-      if (!query) {
-        searchInput.focus();
+    function showMessage(text) {
+      message.textContent = text;
+    }
+
+    function showResults(items) {
+      resultsBox.replaceChildren();
+
+      if (!items.length) {
+        const empty = document.createElement("p");
+        empty.className = "hint";
+        empty.textContent = "No results found. Try different words.";
+        resultsBox.appendChild(empty);
         return;
       }
 
-      searchInput.value = query;
+      items.forEach(function (item) {
+        const card = document.createElement("article");
+        card.className = "result";
 
-      /*
-        Send the search to the Google Programmable Search box.
-        If the provider script has not loaded yet, show a useful
-        message instead of opening a different website.
-      */
-      const googleInput = document.querySelector(
-        ".gsc-input-box input, input.gsc-input"
-      );
+        const title = document.createElement("a");
+        title.textContent = item.title;
+        title.href = item.url;
+        title.target = "_blank";
+        title.rel = "noopener noreferrer";
 
-      const googleButton = document.querySelector(
-        ".gsc-search-button"
-      );
+        const url = document.createElement("span");
+        url.className = "result-url";
+        url.textContent = item.url;
 
-      if (googleInput && googleButton) {
-        googleInput.value = query;
-        googleInput.dispatchEvent(
-          new Event("input", { bubbles: true })
-        );
-        googleButton.click();
-      } else {
-        const message = document.getElementById("searchMessage");
-        if (message) {
-          message.textContent =
-            "Search is loading. Please wait a moment and try again.";
+        const snippet = document.createElement("p");
+        snippet.textContent = item.snippet;
+
+        card.append(title, url, snippet);
+        resultsBox.appendChild(card);
+      });
+    }
+
+    async function runOneSearch(value) {
+      const query = value.trim();
+
+      if (!query) {
+        input.focus();
+        return;
+      }
+
+      if (query.length > 150) {
+        showMessage("Please keep your search under 150 characters.");
+        return;
+      }
+
+      input.value = query;
+      searchButton.disabled = true;
+      searchButton.textContent = "Searching…";
+      showMessage("Searching Wikipedia…");
+
+      const loading = document.createElement("p");
+      loading.className = "hint";
+      loading.textContent = "Finding useful results…";
+      resultsBox.replaceChildren(loading);
+
+      try {
+        const url = new URL(API_URL);
+        url.searchParams.set("q", query);
+        url.searchParams.set("lang", language.value);
+
+        const response = await fetch(url.toString(), {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Search request failed.");
         }
+
+        showResults(Array.isArray(data.results) ? data.results : []);
+        showMessage(
+          "Source: " + (data.provider || "Wikipedia") +
+          " · " + (data.results || []).length + " results"
+        );
+      } catch (error) {
+        resultsBox.replaceChildren();
+
+        const errorText = document.createElement("p");
+        errorText.className = "hint";
+        errorText.textContent =
+          "Search couldn't complete. Please check your connection and try again.";
+        resultsBox.appendChild(errorText);
+
+        showMessage("Search unavailable right now. Please try again.");
+        console.error("ONE Search error:", error);
+      } finally {
+        searchButton.disabled = false;
+        searchButton.textContent = "Search";
       }
     }
 
-    document.getElementById("oneForm").addEventListener(
-      "submit",
-      function (event) {
-        event.preventDefault();
-        runOneSearch(searchInput.value);
-      }
-    );
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      runOneSearch(input.value);
+    });
 
     document.querySelectorAll("[data-query]").forEach(function (button) {
       button.addEventListener("click", function () {
@@ -358,13 +441,5 @@ html
       });
     });
   </script>
-
-  <p
-    id="searchMessage"
-    role="status"
-    aria-live="polite"
-    style="text-align:center;color:#9ba3b7;font-size:13px"
-  ></p>
 </body>
 </html>
-
