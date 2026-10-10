@@ -1,3 +1,4 @@
+
 name: Build ONE Search APK
 
 on:
@@ -24,17 +25,29 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Install Android SDK packages
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platforms;android-35
-            build-tools;35.0.0
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
+
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager -print -quit)"
+
+          if [ -z "$SDKMANAGER" ]; then
+            echo "ERROR: sdkmanager not found"
+            exit 1
+          fi
+
+          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+
+          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses || true
+
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
       - name: Build APK
         working-directory: android-app
