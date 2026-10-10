@@ -24,10 +24,10 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Locate and install Android SDK
+      - name: Install Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: "platforms;android-35,build-tools;35.0.0"
+          packages: 'platforms;android-35,build-tools;35.0.0'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
