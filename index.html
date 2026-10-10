@@ -1,359 +1,314 @@
+
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#070d1a">
-<title>ONE — Everyday Life Assistant</title>
+<title>ONE 2.0 — Everyday Life Assistant</title>
 <style>
-  :root{
-    color-scheme:dark;
-    --bg:#070d1a; --panel:#0d1729; --panel2:#101e34; --line:#1d304b;
-    --text:#eef4ff; --muted:#9eb1cd; --purple:#6857ff; --purple2:#8c72ff;
-    --cyan:#67d8ff; --green:#36d7a0; --shadow:0 18px 48px rgba(0,0,0,.25);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:radial-gradient(ellipse at 50% -20%,#17264b 0,transparent 48%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
-  button,input,textarea,select{font:inherit}
-  button{cursor:pointer}
-  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
-  .app{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr)}
-  .sidebar{border-right:1px solid var(--line);background:rgba(7,14,27,.82);padding:24px 16px;display:flex;flex-direction:column;gap:24px}
-  .brand{display:flex;align-items:center;gap:11px;padding:0 8px}
-  .logo{width:42px;height:42px;border-radius:15px;background:linear-gradient(140deg,#9d8aff,#4a39e8);display:grid;place-items:center;box-shadow:0 8px 25px #5947ff44;font-size:22px;font-weight:800}
-  .brand strong{font-size:21px;letter-spacing:.4px;display:block;line-height:1.15}
-  .brand small{color:var(--muted);font-size:11px}
-  .nav{display:grid;gap:7px}
-  .nav button{border:1px solid transparent;background:transparent;color:#c6d4e9;text-align:left;border-radius:12px;padding:12px 13px;display:flex;align-items:center;gap:12px}
-  .nav button:hover,.nav button.active{background:linear-gradient(100deg,#3426a8,#4c39e5);color:#fff}
-  .nav .ico{width:22px;text-align:center;font-size:17px}
-  .side-note{margin-top:auto;border:1px solid var(--line);background:linear-gradient(145deg,#111d34,#0b1425);border-radius:16px;padding:15px}
-  .side-note b{display:block;margin:7px 0 3px}.side-note p{margin:0;color:var(--muted);font-size:12px}
-  main{min-width:0;padding:24px clamp(16px,4vw,54px) 20px}
-  .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:38px}
-  .eyebrow{font-size:12px;color:var(--cyan);letter-spacing:1.5px;text-transform:uppercase;font-weight:750}
-  .top-actions{display:flex;align-items:center;gap:10px}
-  select,.ghost{border:1px solid var(--line);background:#0d192c;color:var(--text);padding:9px 12px;border-radius:10px}
-  .hero{text-align:center;max-width:850px;margin:0 auto}
-  h1{font-size:clamp(30px,4vw,47px);line-height:1.12;letter-spacing:-1.2px;margin:0 0 12px}
-  .sub{color:var(--muted);margin:0 auto 24px;max-width:640px}
-  .searchbox{display:flex;gap:10px;padding:9px;border:1px solid #5c4af2;background:linear-gradient(110deg,#111d35,#14213b);border-radius:19px;box-shadow:0 0 0 4px #6452ff12,var(--shadow);text-align:left}
-  .searchbox textarea{resize:vertical;min-height:47px;max-height:150px;flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);padding:11px 10px}
-  .searchbox textarea::placeholder{color:#92a7c5}
-  .primary{border:0;border-radius:13px;background:linear-gradient(135deg,var(--purple2),#4d3be9);color:white;padding:0 19px;font-weight:750;box-shadow:0 7px 20px #5947ff35}
-  .primary:hover{filter:brightness(1.12)}
-  .tiny-note{font-size:11px;color:var(--muted);margin:12px 0 18px}
-  .examples{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:30px}
-  .chip{border:1px solid var(--line);background:#0e1a2e;color:#cbd9ed;border-radius:999px;padding:8px 12px;font-size:12px}
-  .chip:hover{border-color:#7464ff;color:#fff}
-  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 12px}
-  h2{font-size:17px;margin:0;letter-spacing:-.2px}
-  .muted{color:var(--muted)}
-  .quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-  .quick{background:linear-gradient(145deg,#111f35,#0b1628);border:1px solid var(--line);border-radius:15px;padding:15px;min-height:112px;text-align:left;color:var(--text)}
-  .quick:hover{border-color:#6758ef;transform:translateY(-1px)}
-  .quick .qico{display:inline-grid;place-items:center;width:35px;height:35px;border-radius:11px;background:#3428a5;font-size:18px;margin-bottom:9px}
-  .quick strong{display:block;font-size:13px}.quick small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
-  .content-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,.8fr);gap:14px;margin-top:24px}
-  .panel{border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,#0e1a2d,#0a1424);padding:18px;min-width:0}
-  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-  .small-btn{border:1px solid var(--line);background:#111f34;color:#dce8fb;padding:7px 10px;border-radius:9px;font-size:12px}
-  .result{display:none;margin-top:24px;text-align:left}
-  .result.show{display:block}
-  .result-card{border:1px solid #33476a;background:linear-gradient(145deg,#101f36,#0b1729);border-radius:18px;padding:20px}
-  .result-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-  .tag{display:inline-block;color:#b6aaff;background:#2c2568;border:1px solid #4c42a4;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:750;letter-spacing:.5px}
-  .result h2{font-size:20px;margin:10px 0 7px}
-  .result p{color:#bdcce1;margin:0 0 14px}
-  .checklist{display:grid;gap:9px;margin:14px 0}
-  .task{display:flex;align-items:flex-start;gap:10px;border:1px solid #243853;background:#0c192c;border-radius:11px;padding:11px;color:#dfeaff}
-  .task input{margin-top:4px;accent-color:var(--green);width:17px;height:17px;flex-shrink:0}
-  .task.done span{text-decoration:line-through;color:#8195b1}
-  .progress-line{height:6px;background:#1b2c43;border-radius:99px;overflow:hidden;margin:10px 0}
-  .progress-line span{height:100%;display:block;background:linear-gradient(90deg,var(--purple),var(--green));width:0;transition:width .2s}
-  .result-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
-  .saved-list{display:grid;gap:9px}
-  .saved-item{border:1px solid var(--line);border-radius:11px;padding:12px;background:#0b1728}
-  .saved-item strong{display:block;font-size:13px}.saved-item small{color:var(--muted)}
-  .saved-item button{margin-top:8px}
-  .empty{color:var(--muted);font-size:13px;padding:14px;border:1px dashed #2b3d58;border-radius:12px}
-  .footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#7186a4;font-size:11px;padding:25px 2px 8px}
-  .toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#142641;border:1px solid #3b5276;color:#fff;padding:11px 16px;border-radius:12px;box-shadow:var(--shadow);transition:.2s;z-index:5;max-width:90vw}
-  .toast.show{opacity:1;transform:translate(-50%,0)}
-  .mobile-brand{display:none}
-  @media(max-width:980px){.app{grid-template-columns:205px minmax(0,1fr)}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr}}
-  @media(max-width:650px){
-    .app{display:block}.sidebar{display:none}main{padding:17px 14px 18px}.topbar{margin-bottom:28px}
-    .mobile-brand{display:flex;align-items:center;gap:8px}.mobile-brand .logo{width:34px;height:34px;border-radius:12px;font-size:18px}
-    .mobile-brand strong{font-size:17px;display:block;line-height:1.1}.mobile-brand small{font-size:10px;color:var(--muted)}
-    .eyebrow{display:none}h1{font-size:32px}.sub{font-size:13px}.searchbox{border-radius:15px;gap:5px}.searchbox textarea{font-size:14px;padding:8px 5px}.primary{padding:0 14px}
-    .examples{justify-content:flex-start}.chip{font-size:11px}.quick-grid{gap:8px}.quick{padding:12px;min-height:105px}.panel{padding:14px}.result-card{padding:14px}
-    .footer{font-size:10px}
-  }
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+:root {
+  color-scheme: dark;
+  --bg:#070d1a; --panel:#0d1729; --panel2:#101e34;
+  --line:#1d304b; --text:#eef4ff; --muted:#9eb1cd;
+  --purple:#6857ff; --purple2:#8c72ff; --cyan:#67d8ff;
+  --green:#36d7a0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#17264b,transparent 48%),var(--bg);color:var(--text);font:15px/1.5 system-ui,Arial,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.app{min-height:100vh;display:grid;grid-template-columns:230px minmax(0,1fr)}
+.sidebar{border-right:1px solid var(--line);background:#070e27dd;padding:22px 15px;display:flex;flex-direction:column;gap:25px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(140deg,#9d8aff,#4a39e8);display:grid;place-items:center;font-size:23px;font-weight:800}
+.brand strong{font-size:21px;display:block;line-height:1.2}
+.brand small{font-size:11px;color:var(--muted)}
+.nav{display:grid;gap:7px}
+.nav button{border:1px solid transparent;background:transparent;color:#c6d4e9;text-align:left;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center}
+.nav button:hover,.nav button.active{background:linear-gradient(100deg,#3426a8,#4c39e5);color:white}
+.side-note{margin-top:auto;border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:15px}
+.side-note b{display:block;margin:7px 0}
+.side-note p{margin:0;color:var(--muted);font-size:12px}
+main{min-width:0;padding:24px clamp(15px,4vw,50px)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:36px}
+.eyebrow{font-size:12px;color:var(--cyan);letter-spacing:1.4px;text-transform:uppercase;font-weight:700}
+.top-actions{display:flex;align-items:center;gap:8px}
+select,.small-btn{border:1px solid var(--line);background:#0d192c;color:var(--text);padding:9px 11px;border-radius:10px}
+.hero{max-width:850px;margin:auto;text-align:center}
+h1{font-size:clamp(30px,4vw,46px);line-height:1.12;letter-spacing:-1px;margin:0 0 12px}
+.sub{color:var(--muted);margin:0 auto 23px;max-width:650px}
+.searchbox{display:flex;gap:8px;padding:9px;border:1px solid #5c4af2;background:linear-gradient(110deg,#111d35,#14213b);border-radius:17px;box-shadow:0 0 0 4px #6452ff12;text-align:left}
+.searchbox textarea{resize:vertical;min-height:44px;max-height:130px;flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);padding:10px}
+.searchbox textarea::placeholder{color:#92a7c5}
+.primary{border:0;border-radius:12px;background:linear-gradient(135deg,var(--purple2),#4d3be9);color:white;padding:10px 17px;font-weight:750}
+.primary:hover{filter:brightness(1.12)}
+.tiny-note{font-size:11px;color:var(--muted);margin:12px 0 17px}
+.examples{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:27px}
+.chip{border:1px solid var(--line);background:#0e1a2e;color:#cbd9ed;border-radius:999px;padding:8px 12px;font-size:12px}
+.chip:hover{border-color:var(--purple2)}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:25px 0 12px}
+h2{font-size:17px;margin:0}
+.muted{color:var(--muted)}
+.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.quick{background:linear-gradient(145deg,#111f35,#0b1628);border:1px solid var(--line);border-radius:15px;padding:14px;min-height:110px;text-align:left;color:var(--text)}
+.quick:hover{border-color:var(--purple2);transform:translateY(-1px)}
+.qico{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#3428a5;font-size:18px;margin-bottom:8px}
+.quick strong{display:block;font-size:13px}
+.quick small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.content-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr);gap:14px;margin-top:24px}
+.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0e1a2d,#0a1424);padding:17px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.small-btn{padding:7px 10px;font-size:12px}
+.result{display:none;margin-top:24px;text-align:left}
+.result.show{display:block}
+.result-card{border:1px solid #33476a;background:linear-gradient(145deg,#101f36,#0b1729);border-radius:18px;padding:19px}
+.result-top{display:flex;justify-content:space-between;gap:12px}
+.tag{display:inline-block;color:#b6aaff;background:#2c2568;border:1px solid #4c42a4;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:750}
+.result h2{font-size:20px;margin:10px 0 7px}
+.result p{color:#bdcce1;margin:0 0 14px}
+.checklist{display:grid;gap:9px;margin:14px 0}
+.task{display:flex;align-items:flex-start;gap:10px;border:1px solid #243853;background:#0c192c;border-radius:11px;padding:11px;color:#dfeaff}
+.task input{margin-top:4px;accent-color:var(--green);width:17px;height:17px;flex-shrink:0}
+.task.done span{text-decoration:line-through;color:#8195b1}
+.progress-line{height:6px;background:#1b2c43;border-radius:99px;overflow:hidden;margin:10px 0}
+.progress-line span{height:100%;display:block;background:linear-gradient(90deg,var(--purple),var(--green));width:0;transition:width .2s}
+.result-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.saved-list{display:grid;gap:9px}
+.saved-item{border:1px solid var(--line);border-radius:11px;padding:12px;background:#0b1728}
+.saved-item strong{display:block;font-size:13px}
+.saved-item small{color:var(--muted);overflow-wrap:anywhere}
+.saved-item button{margin-top:8px}
+.empty{color:var(--muted);font-size:13px;padding:14px;border:1px dashed #2b3d58;border-radius:12px}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#7186a4;font-size:11px;padding:25px 2px 8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#142641;border:1px solid #3b5276;color:white;padding:11px 16px;border-radius:12px;transition:.2s;z-index:5;max-width:90vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.mobile-brand{display:none}
+[hidden]{display:none!important}
+@media(max-width:980px){.app{grid-template-columns:195px minmax(0,1fr)}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.content-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.app{display:block}.sidebar{display:none}main{padding:16px 13px}.topbar{margin-bottom:27px}.mobile-brand{display:flex;align-items:center;gap:8px}.mobile-brand .logo{width:34px;height:34px;border-radius:11px;font-size:18px}.mobile-brand strong{font-size:17px;display:block}.mobile-brand small{font-size:10px;color:var(--muted)}.eyebrow{display:none}h1{font-size:32px}.sub{font-size:13px}.searchbox{border-radius:14px;gap:5px}.searchbox textarea{font-size:14px;padding:8px 5px}.primary{padding:9px 13px}.examples{justify-content:flex-start}.chip{font-size:11px}.quick-grid{gap:8px}.quick{padding:11px;min-height:105px}.panel,.result-card{padding:13px}footer{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="app">
-  <aside class="sidebar" aria-label="Main navigation">
-    <div class="brand"><div class="logo" aria-hidden="true">◉</div><div><strong>ONE</strong><small>Everyday Life Assistant</small></div></div>
-    <nav class="nav">
-      <button class="active" data-view="home"><span class="ico">⌂</span>Home</button>
-      <button data-view="space"><span class="ico">▣</span>My Space</button>
-      <button data-view="planner"><span class="ico">▦</span>Daily Planner</button>
-      <button data-view="settings"><span class="ico">⚙</span>Settings</button>
-    </nav>
-    <div class="side-note"><span aria-hidden="true">✦</span><b>Better Questions<br>Better Days</b><p>Chhote steps, badi progress.</p></div>
-  </aside>
+<aside class="sidebar" aria-label="Main navigation">
+  <div class="brand"><div class="logo">◉</div><div><strong>ONE</strong><small>Everyday Life Assistant</small></div></div>
+  <nav class="nav">
+    <button class="active" data-view="home">⌂ Home</button>
+    <button data-view="space">▣ My Space</button>
+    <button data-view="planner">▦ Daily Planner</button>
+    <button data-view="settings">⚙ Settings</button>
+  </nav>
+  <div class="side-note">✦<b>Better Questions<br>Better Days</b><p>Chhote steps, badi progress.</p></div>
+</aside>
 
-  <main>
-    <header class="topbar">
-      <div class="mobile-brand"><div class="logo" aria-hidden="true">◉</div><div><strong>ONE</strong><small>Everyday Life Assistant</small></div></div>
-      <div class="eyebrow">Your everyday action space</div>
-      <div class="top-actions">
-        <label for="language" class="muted" style="font-size:12px">Language</label>
-        <select id="language" aria-label="Choose language">
-          <option value="hinglish">Hinglish</option><option value="hi">Hindi</option><option value="en">English</option>
-        </select>
-      </div>
-    </header>
+<main>
+<header class="topbar">
+  <div class="mobile-brand"><div class="logo">◉</div><div><strong>ONE</strong><small>Everyday Life Assistant</small></div></div>
+  <div class="eyebrow">Your everyday action space</div>
+  <div class="top-actions"><label for="language" class="muted">Language</label>
+    <select id="language"><option value="hinglish">Hinglish</option><option value="hi">Hindi</option><option value="en">English</option></select>
+  </div>
+</header>
 
-    <section id="homeView">
-      <div class="hero">
-        <h1 id="greeting">Hi! 👋</h1>
-        <p class="sub" id="intro">Main ONE hoon — aapka everyday life assistant.<br>Aap jo chahein pooch sakte hain — Hindi, Hinglish ya English mein.</p>
-        <form id="askForm" class="searchbox">
-          <label for="question" class="sr-only" style="position:absolute;left:-9999px">Ask ONE a question</label>
-          <textarea id="question" rows="1" placeholder="Koi bhi sawaal poochiye... (e.g. kal ka study plan, budget, form fill karne ka tareeka)" required></textarea>
-          <button class="primary" type="submit" aria-label="Create a demo plan">➤</button>
-        </form>
-        <div class="tiny-note">Demo mode: sample plans only — this prototype does not connect to a real AI service.</div>
-        <div class="examples" aria-label="Example questions">
-          <button class="chip" data-example="Kal ka science study plan banao">Kal ka study plan</button>
-          <button class="chip" data-example="Monthly budget kaise banaye?">Monthly budget kaise banaye?</button>
-          <button class="chip" data-example="Form kaise fill karte hain?">Form kaise fill karte hain?</button>
-          <button class="chip" data-example="Help me improve my English">English improve karne ke tips</button>
-        </div>
-      </div>
+<section id="homeView">
+  <div class="hero">
+    <h1 id="greeting">Hi! 👋</h1>
+    <p class="sub" id="intro">Main ONE hoon — aapka everyday life assistant.<br>Aap Hindi, Hinglish ya English mein pooch sakte hain.</p>
+    <form id="askForm" class="searchbox">
+      <label for="question" style="position:absolute;left:-9999px">Ask ONE a question</label>
+      <textarea id="question" rows="1" maxlength="1000" placeholder="Koi bhi sawaal poochiye..." required></textarea>
+      <button class="primary" type="submit" aria-label="Create demo plan">➤</button>
+    </form>
+    <div class="tiny-note">Demo mode: sample plans only — real AI is not connected.</div>
+    <div class="examples">
+      <button class="chip" type="button" data-example="Kal ka science study plan banao">Kal ka study plan</button>
+      <button class="chip" type="button" data-example="Monthly budget kaise banaye?">Monthly budget</button>
+      <button class="chip" type="button" data-example="Form kaise fill karte hain?">Form filling</button>
+      <button class="chip" type="button" data-example="Help me improve my English">English practice</button>
+    </div>
+  </div>
 
-      <div id="result" class="result" aria-live="polite">
-        <div class="result-card">
-          <div class="result-top"><div><span class="tag">DEMO PLAN</span><h2 id="resultTitle">Your action plan</h2></div><span aria-hidden="true" style="font-size:24px">✦</span></div>
-          <p id="resultSummary"></p>
-          <div class="progress-line" aria-label="Task completion progress"><span id="progressBar"></span></div>
-          <small id="progressText" class="muted">0 of 0 tasks complete</small>
-          <div id="checklist" class="checklist"></div>
-          <div class="result-actions">
-            <button id="savePlan" class="primary" type="button" style="min-height:40px">▣ Save to My Space</button>
-            <button id="clearPlan" class="small-btn" type="button">Clear</button>
-          </div>
-        </div>
-      </div>
+  <div id="result" class="result" aria-live="polite">
+    <div class="result-card">
+      <div class="result-top"><div><span class="tag">DEMO PLAN</span><h2 id="resultTitle">Your action plan</h2></div><span>✦</span></div>
+      <p id="resultSummary"></p>
+      <div class="progress-line"><span id="progressBar"></span></div>
+      <small id="progressText" class="muted">0 of 0 tasks complete</small>
+      <div id="checklist" class="checklist"></div>
+      <form id="addPlanTaskForm" class="searchbox" style="margin-top:12px">
+        <label for="newPlanTask" style="position:absolute;left:-9999px">Add your own task</label>
+        <textarea id="newPlanTask" rows="1" maxlength="200" placeholder="Apna task add karein..." required></textarea>
+        <button class="primary" type="submit">+ Add</button>
+      </form>
+      <div class="result-actions"><button id="savePlan" class="primary" type="button">▣ Save to My Space</button><button id="clearPlan" class="small-btn" type="button">Clear</button></div>
+    </div>
+  </div>
 
-      <div class="section-head"><h2>⚡ Quick Actions</h2><span class="muted" style="font-size:12px">Start with one small step</span></div>
-      <div class="quick-grid">
-        <button class="quick" data-quick="checklist"><span class="qico">☑</span><strong>Create Checklist</strong><small>Jawab ko tasks mein badaliye</small></button>
-        <button class="quick" data-quick="space"><span class="qico">▣</span><strong>My Space</strong><small>Important plans save kijiye</small></button>
-        <button class="quick" data-quick="planner"><span class="qico">▦</span><strong>Plan Your Day</strong><small>Apne tasks organize kijiye</small></button>
-        <button class="quick" data-quick="simple"><span class="qico">文</span><strong>Simple Mode</strong><small>Complex cheezon ko easy banayein</small></button>
-      </div>
+  <div class="section-head"><h2>⚡ Quick Actions</h2><span class="muted">Start with one small step</span></div>
+  <div class="quick-grid">
+    <button class="quick" data-quick="checklist"><span class="qico">☑</span><strong>Create Checklist</strong><small>Question ko tasks mein badaliye</small></button>
+    <button class="quick" data-quick="space"><span class="qico">▣</span><strong>My Space</strong><small>Saved plans dekhein</small></button>
+    <button class="quick" data-quick="planner"><span class="qico">▦</span><strong>Plan Your Day</strong><small>Daily tasks organize karein</small></button>
+    <button class="quick" data-quick="simple"><span class="qico">文</span><strong>Simple Mode</strong><small>Easy-language demo</small></button>
+  </div>
+  <div class="content-grid">
+    <section class="panel"><div class="panel-head"><h2>🕘 Recent Activity</h2><button class="small-btn" id="viewSaved" type="button">View saved →</button></div><div id="recentList" class="saved-list"></div></section>
+    <section class="panel"><div class="panel-head"><h2>✨ How ONE works</h2></div><p class="muted">1. Ask a question.</p><p class="muted">2. Get a sample plan.</p><p class="muted">3. Tick tasks and save your progress.</p><p class="muted">These are predefined demo templates, not AI-generated answers.</p></section>
+  </div>
+</section>
 
-      <div class="content-grid">
-        <section class="panel">
-          <div class="panel-head"><h2>🕘 Recent Activity</h2><button class="small-btn" id="viewSaved">View saved →</button></div>
-          <div id="recentList" class="saved-list"><div class="empty">Abhi koi plan save nahi hua. Ek question poochkar plan banayein.</div></div>
-        </section>
-        <section class="panel">
-          <div class="panel-head"><h2>✨ How ONE works</h2></div>
-          <div style="display:grid;gap:13px">
-            <div><b>1. Ask</b><div class="muted" style="font-size:12px">Apni problem simple language mein likhein.</div></div>
-            <div><b>2. Get a demo plan</b><div class="muted" style="font-size:12px">Prototype sample steps dikhata hai; ye AI-generated answer nahi hai.</div></div>
-            <div><b>3. Take action</b><div class="muted" style="font-size:12px">Checklist tick karein aur plan save kar lein.</div></div>
-          </div>
-        </section>
-      </div>
-    </section>
+<section id="spaceView" hidden>
+  <div class="hero" style="text-align:left;margin:0 0 24px"><h1>My Space</h1><p class="sub" style="margin:0">Saved plans stay in this browser.</p></div>
+  <div class="panel"><div class="panel-head"><h2>Saved plans</h2><button class="small-btn" type="button" data-view="home">+ Make a plan</button></div><div id="allSaved" class="saved-list"></div></div>
+</section>
 
-    <section id="spaceView" hidden>
-      <div class="hero" style="text-align:left;margin:0 0 24px"><h1>My Space</h1><p class="sub" style="margin:0">Aapke saved plans aur important notes — isi browser mein.</p></div>
-      <div class="panel"><div class="panel-head"><h2>Saved plans</h2><button class="small-btn" data-view="home">+ Make a plan</button></div><div id="allSaved" class="saved-list"></div></div>
-    </section>
+<section id="plannerView" hidden>
+  <div class="hero" style="text-align:left;margin:0 0 24px"><h1>Daily Planner</h1><p class="sub" style="margin:0">Add tasks and track what you finish.</p></div>
+  <div class="panel">
+    <form id="taskForm" class="searchbox" style="margin-bottom:18px"><label for="newTask" style="position:absolute;left:-9999px">New task</label><textarea id="newTask" rows="1" maxlength="200" placeholder="Aaj kya karna hai?" required></textarea><button class="primary" type="submit">+</button></form>
+    <div id="plannerTasks" class="checklist"></div>
+    <button id="clearDone" class="small-btn" type="button">Remove completed tasks</button>
+  </div>
+</section>
 
-    <section id="plannerView" hidden>
-      <div class="hero" style="text-align:left;margin:0 0 24px"><h1>Daily Planner</h1><p class="sub" style="margin:0">Apne din ke tasks add karein. Tasks is browser mein save rahenge.</p></div>
-      <div class="panel">
-        <form id="taskForm" class="searchbox" style="margin-bottom:18px"><label for="newTask" style="position:absolute;left:-9999px">New task</label><textarea id="newTask" rows="1" placeholder="Aaj kya karna hai?" required></textarea><button class="primary" type="submit" aria-label="Add task">+</button></form>
-        <div id="plannerTasks" class="checklist"></div>
-        <button id="clearDone" class="small-btn" type="button">Remove completed tasks</button>
-      </div>
-    </section>
-
-    <section id="settingsView" hidden>
-      <div class="hero" style="text-align:left;margin:0 0 24px"><h1>Settings</h1><p class="sub" style="margin:0">Simple controls for your prototype.</p></div>
-      <div class="panel">
-        <h2>Privacy & prototype</h2>
-        <p class="muted">Your saved demo plans and planner tasks are stored in this browser using localStorage. They are not synced to another device. Avoid entering passwords, private IDs, or sensitive personal information.</p>
-        <p class="muted">ONE currently uses sample templates only. It does not search the web, send reminders, or connect to an AI model.</p>
-        <button id="exportData" class="small-btn" type="button">Export my saved data</button>
-        <button id="deleteData" class="small-btn" type="button" style="margin-left:8px">Delete local data</button>
-      </div>
-    </section>
-
-    <footer class="footer"><span>💜 ONE — Search less. Get things done.</span><span>Vanilla HTML · CSS · JavaScript · Demo mode</span></footer>
-  </main>
+<section id="settingsView" hidden>
+  <div class="hero" style="text-align:left;margin:0 0 24px"><h1>Settings</h1><p class="sub" style="margin:0">Manage your local prototype data.</p></div>
+  <div class="panel"><h2>Privacy & prototype</h2><p class="muted">Plans and tasks are stored in this browser. They are not synced to other devices. Avoid entering passwords or sensitive personal details.</p><p class="muted">ONE has no real AI connection, web search, or reminders yet.</p><button id="exportData" class="small-btn" type="button">Export my data</button> <button id="deleteData" class="small-btn" type="button">Delete local data</button></div>
+</section>
+<footer><span>💜 ONE — Search less. Get things done.</span><span>Vanilla HTML · CSS · JavaScript · Demo</span></footer>
+</main>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ONE prototype: no libraries, no network requests, no API keys.
-   Demo plans are templates and must not be presented as real AI answers. */
 (() => {
-  "use strict";
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => [...document.querySelectorAll(selector)];
-  const storageKeys = { saved: "one_demo_saved_v1", tasks: "one_demo_tasks_v1", lang: "one_demo_lang_v1" };
-  let currentPlan = null;
-  let toastTimer;
+"use strict";
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const KEY = {saved:"one20_saved",tasks:"one20_tasks",lang:"one20_language"};
+let currentPlan = null, toastTimer;
 
-  const templates = {
-    study: {
-      title: {hinglish:"Study revision plan",hi:"पढ़ाई की दोहराई योजना",en:"Study revision plan"},
-      summary:{hinglish:"Yeh sample plan hai. Apne subject aur available time ke hisaab se steps badal sakte hain.",hi:"यह एक नमूना योजना है। अपने विषय और समय के अनुसार चरण बदलें।",en:"This is a sample plan. Adjust the steps for your subject and available time."},
-      tasks:{hinglish:["Topics aur syllabus ki list banao","Sabse mushkil topic pehle revise karo","Short notes ya formulas dekho","5–10 practice questions solve karo","Galtiyon ko review karo"],hi:["विषयों और पाठ्यक्रम की सूची बनाएं","सबसे कठिन विषय पहले दोहराएं","छोटे नोट्स या सूत्र देखें","5–10 अभ्यास प्रश्न हल करें","अपनी गलतियों की समीक्षा करें"],en:["List topics and syllabus","Review the hardest topic first","Review short notes or formulas","Solve 5–10 practice questions","Review mistakes"]}
-    },
-    budget: {
-      title:{hinglish:"Monthly budget starter",hi:"महीने का बजट",en:"Monthly budget starter"},
-      summary:{hinglish:"Yeh general organizing checklist hai, personal financial advice nahi.",hi:"यह सामान्य व्यवस्था के लिए सूची है, व्यक्तिगत वित्तीय सलाह नहीं।",en:"This is a general organizing checklist, not personalized financial advice."},
-      tasks:{hinglish:["Is mahine ki expected income likho","Zaroori kharche note karo","Optional kharchon ki list banao","Savings goal decide karo","Hafte mein ek baar review karo"],hi:["इस महीने की अनुमानित आय लिखें","ज़रूरी खर्च लिखें","वैकल्पिक खर्चों की सूची बनाएं","बचत का लक्ष्य तय करें","हफ्ते में एक बार समीक्षा करें"],en:["Write expected income for the month","List essential expenses","List optional expenses","Choose a savings goal","Review once a week"]}
-    },
-    form: {
-      title:{hinglish:"Form bharne ki checklist",hi:"फ़ॉर्म भरने की सूची",en:"Form-filling checklist"},
-      summary:{hinglish:"Form ke official instructions follow karein. Sensitive details kisi unknown site par share na karein.",hi:"फ़ॉर्म के आधिकारिक निर्देशों का पालन करें। निजी जानकारी अनजान वेबसाइट पर साझा न करें।",en:"Follow the form's official instructions. Do not share sensitive details on unknown websites."},
-      tasks:{hinglish:["Official website ya form source verify karo","Instructions aur eligibility padho","Required documents ki list banao","Details carefully fill karo","Submit karne se pehle review karo"],hi:["आधिकारिक वेबसाइट या फ़ॉर्म का स्रोत जाँचें","निर्देश और पात्रता पढ़ें","ज़रूरी दस्तावेज़ों की सूची बनाएं","जानकारी ध्यान से भरें","जमा करने से पहले दोबारा जाँचें"],en:["Verify the official website or form source","Read instructions and eligibility","List required documents","Fill in details carefully","Review before submitting"]}
-    },
-    english: {
-      title:{hinglish:"English practice starter",hi:"अंग्रेज़ी अभ्यास योजना",en:"English practice starter"},
-      summary:{hinglish:"Roz thodi practice rakho. Apni comfort aur schedule ke hisaab se badlo.",hi:"रोज़ थोड़ा अभ्यास करें। अपने समय के अनुसार योजना बदलें।",en:"Practice a little each day and adapt the plan to your schedule."},
-      tasks:{hinglish:["5 naye words aur meanings likho","Un words se 3 sentences banao","5 minute English suno ya padho","Apne din ke baare mein 4 lines likho","Kal ke liye ek chhota goal set karo"],hi:["5 नए शब्द और अर्थ लिखें","उन शब्दों से 3 वाक्य बनाएं","5 मिनट अंग्रेज़ी सुनें या पढ़ें","अपने दिन के बारे में 4 पंक्तियाँ लिखें","कल के लिए एक छोटा लक्ष्य रखें"],en:["Write 5 new words and meanings","Make 3 sentences using them","Listen to or read English for 5 minutes","Write 4 lines about your day","Set one small goal for tomorrow"]}
-    },
-    generic: {
-      title:{hinglish:"Your next-step checklist",hi:"अगले कदमों की सूची",en:"Your next-step checklist"},
-      summary:{hinglish:"ONE abhi demo mode mein hai, isliye yeh general sample steps hain — aapke sawaal ka verified AI answer nahi.",hi:"ONE अभी डेमो मोड में है, इसलिए ये सामान्य नमूना चरण हैं, सत्यापित AI उत्तर नहीं।",en:"ONE is in demo mode, so these are general sample steps—not a verified AI answer to your question."},
-      tasks:{hinglish:["Apna goal ek sentence mein likho","Kaam ko 3 chhote steps mein todo","Sabse aasaan step se shuru karo","Jo information missing hai, use verify karo","Progress review karke next step choose karo"],hi:["अपने लक्ष्य को एक वाक्य में लिखें","काम को 3 छोटे चरणों में बाँटें","सबसे आसान चरण से शुरू करें","जो जानकारी नहीं है, उसे सत्यापित करें","प्रगति देखकर अगला चरण चुनें"],en:["Write your goal in one sentence","Break it into 3 small steps","Start with the easiest step","Verify any missing information","Review progress and choose the next step"]}
-    }
-  };
+const templates = {
+study:{
+ title:{hinglish:"Study revision plan",hi:"पढ़ाई की दोहराई योजना",en:"Study revision plan"},
+ summary:{hinglish:"Yeh sample plan hai. Apne subject aur time ke hisaab se badlein.",hi:"यह एक नमूना योजना है। अपने विषय और समय के अनुसार बदलें।",en:"This is a sample plan. Adjust it to your subject and available time."},
+ tasks:{hinglish:["Topics aur syllabus ki list banao","Mushkil topic pehle revise karo","Short notes ya formulas dekho","5–10 practice questions solve karo","Galtiyon ko review karo"],hi:["विषयों की सूची बनाएं","कठिन विषय पहले दोहराएं","छोटे नोट्स या सूत्र देखें","5–10 अभ्यास प्रश्न हल करें","गलतियों की समीक्षा करें"],en:["List the topics","Review the hardest topic first","Review notes or formulas","Solve 5–10 practice questions","Review mistakes"]}
+},
+budget:{
+ title:{hinglish:"Monthly budget starter",hi:"महीने का बजट",en:"Monthly budget starter"},
+ summary:{hinglish:"Yeh general organizing checklist hai, financial advice nahi.",hi:"यह सामान्य व्यवस्था की सूची है, वित्तीय सलाह नहीं।",en:"This is a general checklist, not personalized financial advice."},
+ tasks:{hinglish:["Expected income likho","Zaroori kharche note karo","Optional kharche list karo","Savings goal decide karo","Hafte mein review karo"],hi:["अनुमानित आय लिखें","ज़रूरी खर्च लिखें","वैकल्पिक खर्च लिखें","बचत का लक्ष्य तय करें","साप्ताहिक समीक्षा करें"],en:["Write expected income","List essential expenses","List optional expenses","Choose a savings goal","Review weekly"]}
+},
+form:{
+ title:{hinglish:"Form filling checklist",hi:"फ़ॉर्म भरने की सूची",en:"Form-filling checklist"},
+ summary:{hinglish:"Official instructions follow karein aur unknown sites par sensitive details share na karein.",hi:"आधिकारिक निर्देश पढ़ें और अनजान साइटों पर निजी जानकारी साझा न करें।",en:"Follow official instructions and avoid sharing sensitive details on unknown sites."},
+ tasks:{hinglish:["Official source verify karo","Instructions aur eligibility padho","Required documents ki list banao","Details carefully fill karo","Submit se pehle review karo"],hi:["आधिकारिक स्रोत जाँचें","निर्देश और पात्रता पढ़ें","ज़रूरी दस्तावेज़ लिखें","जानकारी ध्यान से भरें","जमा करने से पहले जाँचें"],en:["Verify the official source","Read instructions and eligibility","List required documents","Fill details carefully","Review before submitting"]}
+},
+english:{
+ title:{hinglish:"English practice starter",hi:"अंग्रेज़ी अभ्यास योजना",en:"English practice starter"},
+ summary:{hinglish:"Roz thodi practice karein aur schedule ke hisaab se badlein.",hi:"रोज़ थोड़ा अभ्यास करें और समय के अनुसार बदलें।",en:"Practice a little each day and adapt the plan to your schedule."},
+ tasks:{hinglish:["5 naye words aur meanings likho","Unse 3 sentences banao","5 minute English suno ya padho","Apne din par 4 lines likho","Kal ka goal set karo"],hi:["5 नए शब्द और अर्थ लिखें","उनसे 3 वाक्य बनाएं","5 मिनट अंग्रेज़ी सुनें या पढ़ें","अपने दिन पर 4 पंक्तियाँ लिखें","कल का लक्ष्य तय करें"],en:["Write 5 new words and meanings","Make 3 sentences with them","Read or listen for 5 minutes","Write 4 lines about your day","Set tomorrow's goal"]}
+},
+generic:{
+ title:{hinglish:"Your next-step checklist",hi:"अगले कदमों की सूची",en:"Your next-step checklist"},
+ summary:{hinglish:"Yeh general sample steps hain, AI-generated ya verified answer nahi.",hi:"ये सामान्य नमूना चरण हैं, AI से बना या सत्यापित उत्तर नहीं।",en:"These are general sample steps, not an AI-generated or verified answer."},
+ tasks:{hinglish:["Apna goal ek sentence mein likho","Kaam ko chhote steps mein todo","Sabse aasaan step se shuru karo","Missing information verify karo","Progress review karke next step chuno"],hi:["लक्ष्य एक वाक्य में लिखें","काम को छोटे चरणों में बाँटें","आसान चरण से शुरू करें","गुम जानकारी की पुष्टि करें","प्रगति देखकर अगला चरण चुनें"],en:["Write your goal in one sentence","Break the work into small steps","Start with the easiest step","Verify missing information","Review progress and choose the next step"]}
+}
+};
 
-  function getLang(){ return $("#language").value || "hinglish"; }
-  function readStore(key, fallback){ try { const raw=localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } }
-  function writeStore(key, value){ try { localStorage.setItem(key, JSON.stringify(value)); } catch { notify("Could not save. Browser storage may be full or disabled."); } }
-  function notify(message){ const el=$("#toast"); el.textContent=message; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),2400); }
-  function esc(value){ return String(value).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-  function pickTemplate(question){
-    const q=question.toLowerCase();
-    if(/study|science|math|exam|test|revision|padh|पढ़|परीक्षा|homework|syllabus/.test(q)) return "study";
-    if(/budget|expense|saving|money|kharch|paisa|बजट|खर्च|बचत/.test(q)) return "budget";
-    if(/form|application|document|दस्तावेज़|फॉर्म|आवेदन/.test(q)) return "form";
-    if(/english|vocabulary|grammar|अंग्रेज़ी|अंग्रेजी/.test(q)) return "english";
-    return "generic";
-  }
-  function makePlan(question){
-    const key=pickTemplate(question), template=templates[key], lang=getLang();
-    return { id: Date.now().toString(36)+Math.random().toString(36).slice(2,7), question, key,
-      title:template.title[lang], summary:template.summary[lang],
-      tasks:template.tasks[lang].map((text,i)=>({id:"t"+i,text,done:false})),
-      createdAt:new Date().toISOString() };
-  }
-  function renderPlan(plan){
-    currentPlan=plan; $("#resultTitle").textContent=plan.title; $("#resultSummary").textContent=plan.summary;
-    $("#checklist").innerHTML="";
-    plan.tasks.forEach(task=>{
-      const label=document.createElement("label"); label.className="task"+(task.done?" done":"");
-      const input=document.createElement("input"); input.type="checkbox"; input.checked=task.done; input.setAttribute("aria-label",task.text);
-      input.addEventListener("change",()=>{task.done=input.checked; label.classList.toggle("done",task.done); updateProgress();});
-      const span=document.createElement("span"); span.textContent=task.text;
-      label.append(input,span); $("#checklist").append(label);
-    });
-    updateProgress(); $("#result").classList.add("show"); $("#result").scrollIntoView({behavior:"smooth",block:"nearest"});
-  }
-  function updateProgress(){
-    if(!currentPlan)return;
-    const done=currentPlan.tasks.filter(t=>t.done).length, total=currentPlan.tasks.length;
-    $("#progressBar").style.width=(total?done/total*100:0)+"%";
-    $("#progressText").textContent=`${done} of ${total} tasks complete`;
-  }
-  function saveCurrent(){
-    if(!currentPlan){notify("Pehle ek demo plan banayein.");return;}
-    const saved=readStore(storageKeys.saved,[]); const copy={...currentPlan,tasks:currentPlan.tasks.map(t=>({...t})),updatedAt:new Date().toISOString()};
-    const index=saved.findIndex(p=>p.id===copy.id); if(index>=0)saved[index]=copy;else saved.unshift(copy);
-    writeStore(storageKeys.saved,saved); renderSaved(); notify("Plan My Space mein save ho gaya.");
-  }
-  function renderSaved(){
-    const saved=readStore(storageKeys.saved,[]);
-    const html=saved.length?saved.map(p=>`<article class="saved-item"><strong>${esc(p.title)}</strong><small>${esc(p.question)} · ${p.tasks.filter(t=>t.done).length}/${p.tasks.length} complete</small><div><button class="small-btn" data-open-saved="${esc(p.id)}">Open</button> <button class="small-btn" data-delete-saved="${esc(p.id)}">Delete</button></div></article>`).join(""):'<div class="empty">Abhi koi saved plan nahi hai.</div>';
-    $("#recentList").innerHTML=html; $("#allSaved").innerHTML=html;
-  }
-  function openSaved(id){
-    const p=readStore(storageKeys.saved,[]).find(item=>item.id===id); if(!p)return;
-    showView("home"); renderPlan({...p,tasks:p.tasks.map(t=>({...t}))});
-  }
-  function showView(view){
-    const views={home:"#homeView",space:"#spaceView",planner:"#plannerView",settings:"#settingsView"};
-    Object.entries(views).forEach(([key,selector])=>$(selector).hidden=key!==view);
-    $$(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
-    if(view==="space")renderSaved(); if(view==="planner")renderPlanner();
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
-  function renderPlanner(){
-    const tasks=readStore(storageKeys.tasks,[]);
-    $("#plannerTasks").innerHTML=tasks.length?tasks.map(t=>`<label class="task ${t.done?"done":""}"><input type="checkbox" data-task-toggle="${esc(t.id)}" ${t.done?"checked":""}><span>${esc(t.text)}</span></label>`).join(""):'<div class="empty">Abhi tasks nahi hain. Upar ek task add karein.</div>';
-  }
-  function addPlannerTask(text){
-    const tasks=readStore(storageKeys.tasks,[]); tasks.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),text,done:false});
-    writeStore(storageKeys.tasks,tasks); renderPlanner();
-  }
-  function updateLanguage(){
-    const lang=getLang();
-    $("#greeting").textContent=lang==="hi"?"नमस्ते! 👋":lang==="en"?"Hi! 👋":"Hi! 👋";
-    $("#intro").innerHTML=lang==="hi"?"मैं ONE हूँ — आपका रोज़मर्रा का सहायक।<br>हिंदी, Hinglish या English में पूछें।":lang==="en"?"I’m ONE — your everyday life assistant.<br>Ask in Hindi, Hinglish, or English.":"Main ONE hoon — aapka everyday life assistant.<br>Aap Hindi, Hinglish ya English mein pooch sakte hain.";
-    $("#question").placeholder=lang==="hi"?"अपना सवाल लिखें...":lang==="en"?"Ask a question...":"Koi bhi sawaal poochiye...";
-    writeStore(storageKeys.lang,lang);
-  }
+function read(key,fallback){try{const x=localStorage.getItem(key);return x?JSON.parse(x):fallback}catch{return fallback}}
+function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch{notify("Save nahi hua. Browser storage check karein.");return false}}
+function notify(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2400)}
+function lang(){return $("#language").value||"hinglish"}
+function templateKey(q){q=q.toLowerCase();if(/study|science|math|exam|test|revision|padh|पढ़|परीक्षा|homework|syllabus/.test(q))return"study";if(/budget|expense|saving|money|kharch|paisa|बजट|खर्च|बचत/.test(q))return"budget";if(/form|application|document|दस्तावेज़|फॉर्म|आवेदन/.test(q))return"form";if(/english|vocabulary|grammar|अंग्रेज़ी|अंग्रेजी/.test(q))return"english";return"generic"}
+function makePlan(question){const key=templateKey(question),t=templates[key],l=lang();return{id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),question,key,title:t.title[l],summary:t.summary[l],tasks:t.tasks[l].map((text,i)=>({id:"t"+i,text,done:false})),createdAt:new Date().toISOString()}}
+function updateProgress(){if(!currentPlan)return;const done=currentPlan.tasks.filter(t=>t.done).length,total=currentPlan.tasks.length;$("#progressBar").style.width=(total?done/total*100:0)+"%";$("#progressText").textContent=`${done} of ${total} tasks complete`}
+function renderPlan(plan){
+ currentPlan=plan;$("#resultTitle").textContent=plan.title;$("#resultSummary").textContent=plan.summary;
+ const list=$("#checklist");list.replaceChildren();
+ plan.tasks.forEach(task=>{const label=document.createElement("label");label.className="task"+(task.done?" done":"");const input=document.createElement("input");input.type="checkbox";input.checked=!!task.done;input.setAttribute("aria-label",task.text);input.addEventListener("change",()=>{task.done=input.checked;label.classList.toggle("done",task.done);updateProgress()});const span=document.createElement("span");span.textContent=task.text;label.append(input,span);list.append(label)});
+ updateProgress();$("#result").classList.add("show");
+}
+function renderSaved(){
+ const saved=read(KEY.saved,[]);
+ const html=saved.length?saved.map(p=>`<article class="saved-item"><strong>${escapeHTML(p.title)}</strong><small>${escapeHTML(p.question)} · ${p.tasks.filter(t=>t.done).length}/${p.tasks.length} complete</small><div><button class="small-btn" type="button" data-open="${escapeHTML(p.id)}">Open</button> <button class="small-btn" type="button" data-delete="${escapeHTML(p.id)}">Delete</button></div></article>`).join(""):'<div class="empty">Abhi koi saved plan nahi hai.</div>';
+ $("#recentList").innerHTML=html;$("#allSaved").innerHTML=html;
+}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function saveCurrent(){
+ if(!currentPlan){notify("Pehle ek plan banayein.");return}
+ const saved=read(KEY.saved,[]),copy={...currentPlan,tasks:currentPlan.tasks.map(t=>({...t})),updatedAt:new Date().toISOString()};
+ const index=saved.findIndex(p=>p.id===copy.id);if(index>=0)saved[index]=copy;else saved.unshift(copy);
+ if(write(KEY.saved,saved)){renderSaved();notify("Plan My Space mein save ho gaya.")}
+}
+function showView(view){
+ const views={home:"#homeView",space:"#spaceView",planner:"#plannerView",settings:"#settingsView"};
+ Object.entries(views).forEach(([k,s])=>$(s).hidden=k!==view);
+ $$(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+ if(view==="space")renderSaved();if(view==="planner")renderPlanner();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderPlanner(){
+ const tasks=read(KEY.tasks,[]),list=$("#plannerTasks");list.replaceChildren();
+ if(!tasks.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Abhi tasks nahi hain. Upar ek task add karein.";list.append(empty);return}
+ tasks.forEach(t=>{const label=document.createElement("label");label.className="task"+(t.done?" done":"");const input=document.createElement("input");input.type="checkbox";input.checked=!!t.done;input.dataset.taskId=t.id;input.setAttribute("aria-label","Complete "+t.text);const span=document.createElement("span");span.textContent=t.text;label.append(input,span);list.append(label)})
+}
+function updateLanguage(){
+ const l=lang();$("#greeting").textContent=l==="hi"?"नमस्ते! 👋":"Hi! 👋";
+ $("#intro").innerHTML=l==="hi"?"मैं ONE हूँ — आपका रोज़मर्रा का सहायक।<br>हिंदी, Hinglish या English में पूछें।":l==="en"?"I’m ONE — your everyday life assistant.<br>Ask in Hindi, Hinglish, or English.":"Main ONE hoon — aapka everyday life assistant.<br>Aap Hindi, Hinglish ya English mein pooch sakte hain.";
+ $("#question").placeholder=l==="hi"?"अपना सवाल लिखें...":l==="en"?"Ask a question...":"Koi bhi sawaal poochiye...";
+ write(KEY.lang,l);
+}
 
-  $("#askForm").addEventListener("submit",e=>{
-    e.preventDefault(); const q=$("#question").value.trim(); if(!q){notify("Pehle apna sawaal likhein.");return;}
-    renderPlan(makePlan(q));
-  });
-  $$(".chip").forEach(btn=>btn.addEventListener("click",()=>{$("#question").value=btn.dataset.example;$("#question").focus();}));
-  $$(".quick").forEach(btn=>btn.addEventListener("click",()=>{
-    const action=btn.dataset.quick;
-    if(action==="space")showView("space");
-    else if(action==="planner")showView("planner");
-    else if(action==="simple"){ $("#language").value="hinglish";updateLanguage();$("#question").value="Explain a difficult topic in simple words";$("#question").focus();notify("Simple mode: easy-language demo template selected.");}
-    else { $("#question").focus();notify("Apna question likhein; ONE sample checklist banayega.");}
-  }));
-  $("#savePlan").addEventListener("click",saveCurrent);
-  $("#clearPlan").addEventListener("click",()=>{$("#result").classList.remove("show");currentPlan=null;});
-  $("#viewSaved").addEventListener("click",()=>showView("space"));
-  $$(".nav button,[data-view]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view)));
-  document.addEventListener("click",e=>{
-    const open=e.target.closest("[data-open-saved]"); if(open)openSaved(open.dataset.openSaved);
-    const del=e.target.closest("[data-delete-saved]"); if(del){writeStore(storageKeys.saved,readStore(storageKeys.saved,[]).filter(p=>p.id!==del.dataset.deleteSaved));renderSaved();notify("Saved plan deleted.");}
-  });
-  $("#language").addEventListener("change",updateLanguage);
-  $("#taskForm").addEventListener("submit",e=>{e.preventDefault();const input=$("#newTask"),text=input.value.trim();if(!text)return;addPlannerTask(text);input.value="";notify("Task added.");});
-  $("#plannerTasks").addEventListener("change",e=>{
-    const id=e.target.dataset.taskToggle;if(!id)return;const tasks=readStore(storageKeys.tasks,[]);const t=tasks.find(x=>x.id===id);if(t)t.done=e.target.checked;writeStore(storageKeys.tasks,tasks);renderPlanner();
-  });
-  $("#clearDone").addEventListener("click",()=>{writeStore(storageKeys.tasks,readStore(storageKeys.tasks,[]).filter(t=>!t.done));renderPlanner();notify("Completed tasks removed.");});
-  $("#exportData").addEventListener("click",()=>{
-    const data={savedPlans:readStore(storageKeys.saved,[]),plannerTasks:readStore(storageKeys.tasks,[])};
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="one-my-data.json";a.click();URL.revokeObjectURL(url);notify("Export file created.");
-  });
-  $("#deleteData").addEventListener("click",()=>{
-    if(!confirm("Is browser mein ONE ke saved plans aur tasks delete kar dein?"))return;
-    Object.values(storageKeys).forEach(k=>localStorage.removeItem(k));currentPlan=null;$("#result").classList.remove("show");renderSaved();renderPlanner();notify("Local data deleted.");
-  });
-  const savedLang=readStore(storageKeys.lang,"hinglish");$("#language").value=savedLang;updateLanguage();renderSaved();renderPlanner();
+$("#askForm").addEventListener("submit",e=>{e.preventDefault();const q=$("#question").value.trim();if(q)renderPlan(makePlan(q))});
+$$("[data-example]").forEach(b=>b.addEventListener("click",()=>{$("#question").value=b.dataset.example;$("#question").focus()}));
+$$("[data-quick]").forEach(b=>b.addEventListener("click",()=>{
+ const a=b.dataset.quick;
+ if(a==="space")showView("space");
+ else if(a==="planner")showView("planner");
+ else if(a==="simple"){const q="Explain a difficult topic in simple words";$("#question").value=q;$("#question").focus();notify("Simple mode selected. Demo templates only.")}
+ else $("#question").focus();
+}));
+$("#addPlanTaskForm").addEventListener("submit",e=>{
+ e.preventDefault();if(!currentPlan)return notify("Pehle ek plan banayein.");
+ const input=$("#newPlanTask"),text=input.value.trim();if(!text)return;
+ if(currentPlan.tasks.length>=100)return notify("Maximum 100 tasks per plan.");
+ currentPlan.tasks.push({id:"custom-"+Date.now().toString(36),text,done:false});input.value="";renderPlan(currentPlan);notify("Task add ho gaya!");
+});
+$("#savePlan").addEventListener("click",saveCurrent);
+$("#clearPlan").addEventListener("click",()=>{$("#result").classList.remove("show");currentPlan=null;$("#newPlanTask").value=""});
+$("#viewSaved").addEventListener("click",()=>showView("space"));
+$$("[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+document.addEventListener("click",e=>{
+ const open=e.target.closest("[data-open]");if(open){const p=read(KEY.saved,[]).find(x=>x.id===open.dataset.open);if(p){showView("home");renderPlan({...p,tasks:p.tasks.map(t=>({...t}))})}}
+ const del=e.target.closest("[data-delete]");if(del){write(KEY.saved,read(KEY.saved,[]).filter(p=>p.id!==del.dataset.delete));renderSaved();notify("Saved plan deleted.")}
+});
+$("#language").addEventListener("change",updateLanguage);
+$("#taskForm").addEventListener("submit",e=>{
+ e.preventDefault();const input=$("#newTask"),text=input.value.trim();if(!text)return;
+ const tasks=read(KEY.tasks,[]);tasks.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),text,done:false});
+ if(write(KEY.tasks,tasks)){input.value="";renderPlanner();notify("Task added.")}
+});
+$("#plannerTasks").addEventListener("change",e=>{
+ const id=e.target.dataset.taskId;if(!id)return;
+ const tasks=read(KEY.tasks,[]),task=tasks.find(t=>t.id===id);if(task)task.done=e.target.checked;
+ write(KEY.tasks,tasks);renderPlanner();
+});
+$("#clearDone").addEventListener("click",()=>{write(KEY.tasks,read(KEY.tasks,[]).filter(t=>!t.done));renderPlanner();notify("Completed tasks removed.")});
+$("#exportData").addEventListener("click",()=>{
+ const data={savedPlans:read(KEY.saved,[]),plannerTasks:read(KEY.tasks,[])};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="one-my-data.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify("Export download requested.");
+});
+$("#deleteData").addEventListener("click",()=>{
+ if(!confirm("Is browser mein ONE ke saved plans aur tasks delete kar dein?"))return;
+ Object.values(KEY).forEach(k=>localStorage.removeItem(k));currentPlan=null;$("#result").classList.remove("show");renderSaved();renderPlanner();notify("Local data deleted.");
+});
+const savedLang=read(KEY.lang,"hinglish");$("#language").value=["hinglish","hi","en"].includes(savedLang)?savedLang:"hinglish";
+updateLanguage();renderSaved();renderPlanner();
 })();
 </script>
 </body>
