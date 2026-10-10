@@ -3,737 +3,745 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#090b12">
-<meta name="description" content="ONE Search — websites, images and videos in one place.">
-<title>ONE Search</title>
-
+<title>ONE Search — Explore Everything</title>
+<meta name="description" content="ONE Search: explore knowledge, images, videos and useful everyday tools.">
 <style>
-:root {
-  color-scheme: dark;
-  --bg:#090b12;
-  --panel:#121725;
-  --panel2:#1a2030;
-  --line:#293146;
-  --text:#f5f6ff;
-  --muted:#9aa4ba;
-  --accent:#a78bfa;
-  --green:#9ce9bb;
+:root{
+  --bg:#090b12;--panel:#121725;--panel2:#1a2030;
+  --line:#293146;--text:#f5f6ff;--muted:#9aa4ba;
+  --accent:#a78bfa;--green:#9ce9bb;--danger:#ff9b9b;
 }
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  min-height:100vh;
-  color:var(--text);
-  background:radial-gradient(ellipse at 50% 0%,#29204c 0,transparent 42%),var(--bg);
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+*{box-sizing:border-box}
+body{
+  margin:0;background:radial-gradient(ellipse at top,#17182c 0%,var(--bg) 48%);
+  color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  min-height:100vh
 }
-button,input,select { font:inherit; }
-button,a,select { -webkit-tap-highlight-color:transparent; }
-button { cursor:pointer; }
-a { color:inherit; }
-.topbar {
-  height:68px;
-  padding:0 6%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid #ffffff10;
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--accent);outline-offset:3px
 }
-.brand { display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px; }
-.logo {
-  width:38px;height:38px;display:grid;place-items:center;
-  border-radius:12px;background:linear-gradient(135deg,#b49aff,#6355df);
+button:disabled{opacity:.55;cursor:not-allowed}
+header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  max-width:1100px;margin:auto;padding:22px 20px
 }
-.gradient {
-  background:linear-gradient(90deg,#c7b5ff,#8875ff);
-  background-clip:text;-webkit-background-clip:text;color:transparent;
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:22px;letter-spacing:-.8px}
+.logo{
+  display:grid;place-items:center;width:42px;height:42px;border-radius:14px;
+  color:#100d1b;background:linear-gradient(135deg,#c4b5fd,#a7f3d0);
+  font-size:24px;font-weight:900
 }
-.top-right { color:var(--muted);font-size:12px; }
-main { width:min(900px,92%);margin:auto;padding:55px 0 70px; }
-.hero { text-align:center; }
-.eyebrow {
-  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;
-  border:1px solid #a78bfa38;background:#a78bfa0c;color:#d0c4ff;
-  border-radius:30px;font-size:12px;
+.pill{border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:8px 12px;font-size:12px}
+main{max-width:920px;margin:34px auto 70px;padding:0 18px}
+.hero{text-align:center;margin-bottom:26px}
+.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(37px,7vw,65px);line-height:1.06;letter-spacing:-2.8px;margin:14px 0}
+.gradient{background:linear-gradient(90deg,#c4b5fd,#9ce9bb);color:transparent;background-clip:text}
+.subtitle{color:var(--muted);max-width:540px;margin:0 auto;line-height:1.7}
+.search-card{
+  background:rgba(18,23,37,.94);border:1px solid var(--line);
+  border-radius:22px;padding:12px;box-shadow:0 22px 70px #0005
 }
-.dot { width:7px;height:7px;border-radius:50%;background:var(--green); }
-h1 { font-size:clamp(40px,8vw,68px);line-height:1.08;letter-spacing:-3px;margin:23px 0 12px; }
-.subtitle { max-width:490px;margin:0 auto 28px;color:var(--muted);line-height:1.7;font-size:14px; }
-.search-box {
-  display:flex;align-items:center;gap:10px;padding:8px;
-  border:1px solid #a78bfa55;border-radius:17px;background:#111521ed;
-  box-shadow:0 15px 50px #0004;
+.search-row{display:flex;gap:9px}
+#query{
+  min-width:0;flex:1;border:0;background:transparent;color:var(--text);
+  padding:13px;font-size:16px;outline:none
 }
-.search-box:focus-within { border-color:var(--accent); }
-.search-symbol { padding-left:9px;font-size:22px;color:var(--muted); }
-#query {
-  flex:1;width:100%;min-width:0;padding:13px 0;border:0;outline:0;
-  color:var(--text);background:transparent;font-size:15px;
+.primary,.secondary,.icon-btn,.chip,.tab,.tool-btn{
+  border:1px solid var(--line);border-radius:12px;padding:11px 15px;
+  color:var(--text);background:var(--panel2);transition:.18s
 }
-#query::placeholder { color:#788197; }
-#language {
-  max-width:108px;padding:11px 5px;border:1px solid var(--line);
-  border-radius:10px;background:var(--panel2);color:var(--text);
+.primary{background:var(--accent);color:#171124;border-color:transparent;font-weight:800}
+.primary:hover{filter:brightness(1.08)}
+.secondary:hover,.icon-btn:hover,.chip:hover,.tab:hover,.tool-btn:hover{border-color:var(--accent)}
+.search-options{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 10px 2px}
+select{
+  background:var(--panel2);color:var(--text);border:1px solid var(--line);
+  border-radius:10px;padding:9px
 }
-.primary-btn {
-  border:0;border-radius:12px;padding:13px 19px;color:white;
-  background:linear-gradient(135deg,#a78bfa,#6c5ce7);font-weight:750;
+.small{font-size:12px;color:var(--muted)}
+.chips,.tools-bar,.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.chips{justify-content:center;margin:18px 0 30px}
+.chip{font-size:13px;padding:9px 13px;border-radius:99px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 0 12px}
+h2{font-size:19px;margin:0;letter-spacing:-.4px}
+h3{font-size:16px;margin:0 0 10px}
+.tools-bar{margin:12px 0 20px}
+.tool-btn{font-size:13px;padding:10px 12px}
+.panel,.result-card,.saved-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px
 }
-.primary-btn:disabled { opacity:.6;cursor:wait; }
-.hint { text-align:left;color:var(--muted);font-size:11px;margin:12px 4px 0; }
-.quick { display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:23px; }
-.chip {
-  border:1px solid var(--line);border-radius:30px;padding:9px 13px;
-  color:#c8cee0;background:#ffffff05;font-size:12px;
+.panel{margin:14px 0}
+.panel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.panel input,.panel select,.panel textarea{
+  width:100%;background:#0c101b;color:var(--text);border:1px solid var(--line);
+  border-radius:10px;padding:12px;margin:5px 0 12px
 }
-.chip:hover { border-color:var(--accent); }
-#resultsSection { display:none;margin-top:45px; }
-.results-header {
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding-bottom:17px;border-bottom:1px solid var(--line);
-}
-.results-header h2 { margin:0;font-size:20px;overflow-wrap:anywhere; }
-#resultCount { margin-top:5px;color:var(--muted);font-size:12px; }
-.secondary-btn {
-  padding:9px 12px;border:1px solid var(--line);border-radius:10px;
-  background:var(--panel);color:#d3d8e7;font-size:12px;
-}
-.tabs { display:flex;gap:8px;overflow-x:auto;padding:17px 0; }
-.tab {
-  flex:0 0 auto;border:1px solid var(--line);border-radius:12px;
-  padding:10px 17px;background:var(--panel);color:var(--muted);
-}
-.tab.active { color:white;background:#7764e8;border-color:#a78bfa; }
-.result { padding:20px 0;border-bottom:1px solid #ffffff10; }
-.result-domain { color:var(--green);font-size:12px;overflow-wrap:anywhere; }
-.result h3 { margin:8px 0;font-size:19px;font-weight:650;line-height:1.4; }
-.result h3 a { color:#c8bbff;text-decoration:none; }
-.result h3 a:hover { text-decoration:underline; }
-.result p { margin:0;color:#b5bdcf;font-size:14px;line-height:1.8;overflow-wrap:anywhere; }
-.result-actions { display:flex;gap:8px;flex-wrap:wrap;margin-top:12px; }
-.action-link {
-  display:inline-block;text-decoration:none;border:1px solid var(--line);
-  border-radius:9px;padding:8px 11px;font-size:12px;color:#d9d4ff;
-}
-.action-link:hover { border-color:var(--accent); }
-.image-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px; }
-.image-card {
-  min-width:0;overflow:hidden;border:1px solid var(--line);
-  border-radius:13px;background:var(--panel);text-decoration:none;
-}
-.image-card img {
-  display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--panel2);
-}
-.image-title { display:block;padding:10px;font-size:12px;line-height:1.5;overflow-wrap:anywhere; }
-.image-note { margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.7; }
-.state {
-  padding:36px 16px;margin-top:15px;text-align:center;
-  border:1px solid var(--line);border-radius:16px;background:#ffffff03;
-}
-.state-icon { font-size:28px; }
-.state h3 { margin:12px 0 7px; }
-.state p { max-width:440px;margin:auto;color:var(--muted);font-size:13px;line-height:1.8; }
-.video-card {
-  padding:22px;margin-bottom:13px;border:1px solid var(--line);
-  border-radius:16px;background:linear-gradient(135deg,#18162b,#121725);
-}
-.video-card h3 { margin:8px 0;overflow-wrap:anywhere; }
-.video-card p { color:var(--muted);line-height:1.7;font-size:13px; }
-.video-input {
-  display:block;width:100%;padding:13px;margin:12px 0;
-  border:1px solid var(--line);border-radius:10px;
-  background:var(--bg);color:var(--text);
-}
-.player-wrap { margin-top:18px; }
-.player-wrap iframe {
-  display:block;width:100%;aspect-ratio:16/9;border:0;
-  border-radius:12px;background:#000;
-}
-.footer {
-  padding:24px 12px;text-align:center;color:#818ba0;
-  border-top:1px solid #ffffff0c;font-size:12px;line-height:1.8;
-}
-.footer strong { color:#c8bbff; }
-:focus-visible { outline:2px solid var(--accent);outline-offset:3px; }
-@media(max-width:600px) {
-  .topbar { height:62px;padding:0 4%; }
-  main { padding-top:40px; }
-  h1 { letter-spacing:-2px; }
-  .search-box { gap:6px; }
-  .search-symbol { display:none; }
-  #query { padding-left:8px;font-size:14px; }
-  #language { max-width:83px;font-size:12px; }
-  .primary-btn { padding:12px 11px;font-size:13px; }
-  .image-grid { grid-template-columns:repeat(2,minmax(0,1fr));gap:9px; }
-  .results-header h2 { font-size:17px; }
-  .result h3 { font-size:17px; }
-}
-@media(prefers-reduced-motion:reduce) {
-  *,*::before,*::after { transition:none!important;scroll-behavior:auto!important; }
+.panel textarea{min-height:100px;resize:vertical}
+.button-row{display:flex;flex-wrap:wrap;gap:8px}
+.hidden{display:none!important}
+.results-top{margin-top:34px}
+.tabs{margin:15px 0}
+.tab{font-size:13px}
+.tab.active{background:#302747;border-color:var(--accent);color:#e9ddff}
+#results{display:grid;gap:12px}
+.result-card{padding:18px}
+.result-card h3{margin:8px 0}
+.result-card p{color:#c0c8d9;line-height:1.65;margin:8px 0 13px;overflow-wrap:anywhere}
+.result-card a{color:#c4b5fd;text-decoration:none;overflow-wrap:anywhere}
+.result-card a:hover{text-decoration:underline}
+.domain{font-size:12px;color:var(--green)}
+.result-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.result-actions button{padding:7px 10px;font-size:12px;border-radius:9px}
+.state{padding:25px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:15px;line-height:1.7}
+#imagesGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.image-card{overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.image-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--panel2)}
+.image-card a{display:block;color:var(--text);text-decoration:none;font-size:12px;padding:10px;overflow-wrap:anywhere}
+.video-frame{width:100%;aspect-ratio:16/9;border:0;border-radius:13px;background:#000;margin-top:12px}
+.stat{font-size:12px;color:var(--muted)}
+footer{text-align:center;padding:25px 18px 40px;color:var(--muted);font-size:12px}
+a{overflow-wrap:anywhere}
+@media(max-width:600px){
+  header{padding:15px}.pill{display:none}main{margin-top:22px}
+  .search-row{flex-wrap:wrap}#query{flex-basis:100%}.search-row .primary{flex:1}
+  .panel-grid{grid-template-columns:1fr}#imagesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .result-card{padding:15px}h1{letter-spacing:-1.7px}
 }
 </style>
 </head>
-
 <body>
-<header class="topbar">
-  <div class="brand">
-    <div class="logo" aria-hidden="true">O</div>
-    <span>ONE <span class="gradient">Search</span></span>
-  </div>
-  <div class="top-right">Search your way.</div>
+<header>
+  <div class="brand"><div class="logo" aria-hidden="true">O</div><span>ONE <span class="gradient">Search</span></span></div>
+  <div class="pill">Explore · Learn · Discover</div>
 </header>
 
 <main>
   <section class="hero">
-    <div class="eyebrow"><span class="dot"></span> Discover something new</div>
-    <h1>Find more.<br><span class="gradient">Find ONE.</span></h1>
-    <p class="subtitle">Discover websites, images and videos in one simple search experience.</p>
+    <div class="eyebrow">Your everyday discovery space</div>
+    <h1>One search.<br><span class="gradient">More possibilities.</span></h1>
+    <p class="subtitle">Explore knowledge, find images, organize your learning and use helpful everyday tools—all in one place.</p>
+  </section>
 
-    <form id="searchForm" role="search">
-      <div class="search-box">
-        <span class="search-symbol" aria-hidden="true">⌕</span>
-        <input id="query" type="search" maxlength="150"
-          placeholder="What do you want to discover?"
-          aria-label="Search query" autocomplete="off" required>
-        <select id="language" aria-label="Search language">
-          <option value="en">English</option>
-          <option value="hi">हिन्दी</option>
-        </select>
-        <button class="primary-btn" id="searchButton" type="submit">Search</button>
-      </div>
-      <p class="hint">Enter to search · Choose All, Images or Videos</p>
-    </form>
+  <form id="searchForm" class="search-card">
+    <div class="search-row">
+      <input id="query" type="search" maxlength="150" placeholder="Search anything..." autocomplete="off" aria-label="Search query" required>
+      <button class="secondary" type="button" id="voiceButton" title="Voice search">🎙 Voice</button>
+      <button class="primary" id="searchButton" type="submit">Search ↗</button>
+    </div>
+    <div class="search-options">
+      <label class="small" for="language">Search language</label>
+      <select id="language" aria-label="Search language">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+      <span class="small">Knowledge results are currently from Wikipedia.</span>
+    </div>
+  </form>
 
-    <div class="quick">
-      <button class="chip" type="button" data-query="Space and planets">🪐 Space</button>
-      <button class="chip" type="button" data-query="Artificial intelligence">🤖 AI</button>
-      <button class="chip" type="button" data-query="Beautiful nature">🌿 Nature</button>
-      <button class="chip" type="button" data-query="History of India">🏛️ History</button>
+  <div class="chips" aria-label="Quick searches">
+    <button class="chip" data-query="Space exploration">🚀 Space</button>
+    <button class="chip" data-query="Artificial intelligence">🧠 AI</button>
+    <button class="chip" data-query="Nature">🌿 Nature</button>
+    <button class="chip" data-query="World history">🌍 History</button>
+    <button class="chip" data-query="How computers work">💻 Computers</button>
+  </div>
+
+  <section>
+    <div class="section-heading"><h2>Everyday tools</h2><span class="small">Free · Built in</span></div>
+    <div class="tools-bar">
+      <button class="tool-btn" data-open="calculatorPanel">🧮 Calculator</button>
+      <button class="tool-btn" data-open="converterPanel">📐 Unit Converter</button>
+      <button class="tool-btn" data-open="savedPanel">🔖 Saved Pages</button>
+      <button class="tool-btn" data-open="studyPanel">📚 Study Mode</button>
+      <button class="tool-btn" data-open="readingPanel">📖 Reading Mode</button>
+      <button class="tool-btn" data-open="discoveryPanel">✨ Daily Discovery</button>
     </div>
   </section>
 
-  <section id="resultsSection" aria-live="polite">
-    <div class="results-header">
-      <div>
-        <h2 id="resultsTitle">Search results</h2>
-        <div id="resultCount"></div>
-      </div>
-      <button class="secondary-btn" id="copySearchLink" type="button">Copy search link</button>
-    </div>
+  <section id="calculatorPanel" class="panel hidden">
+    <h3>🧮 Quick Calculator</h3>
+    <p class="small">Supports basic arithmetic, brackets and decimals. Use × as * and ÷ as /.</p>
+    <label for="calcInput" class="small">Expression</label>
+    <input id="calcInput" placeholder="Example: (25 + 5) * 3 / 2">
+    <div class="button-row"><button class="primary" id="calculateButton">Calculate</button><button class="secondary" id="clearCalc">Clear</button></div>
+    <p id="calcResult" aria-live="polite"></p>
+  </section>
 
-    <div class="tabs" role="group" aria-label="Result category">
-      <button class="tab active" type="button" data-tab="all" aria-pressed="true">🌐 All</button>
-      <button class="tab" type="button" data-tab="images" aria-pressed="false">🖼️ Images</button>
-      <button class="tab" type="button" data-tab="videos" aria-pressed="false">▶ Videos</button>
+  <section id="converterPanel" class="panel hidden">
+    <h3>📐 Unit Converter</h3>
+    <div class="panel-grid">
+      <div><label class="small" for="convertValue">Value</label><input id="convertValue" type="number" value="1" step="any"></div>
+      <div><label class="small" for="convertType">Conversion type</label>
+        <select id="convertType">
+          <option value="km-mi">Kilometres → Miles</option>
+          <option value="mi-km">Miles → Kilometres</option>
+          <option value="kg-lb">Kilograms → Pounds</option>
+          <option value="lb-kg">Pounds → Kilograms</option>
+          <option value="cm-in">Centimetres → Inches</option>
+          <option value="in-cm">Inches → Centimetres</option>
+          <option value="c-f">Celsius → Fahrenheit</option>
+          <option value="f-c">Fahrenheit → Celsius</option>
+          <option value="km-m">Kilometres → Metres</option>
+          <option value="m-km">Metres → Kilometres</option>
+          <option value="l-ml">Litres → Millilitres</option>
+          <option value="ml-l">Millilitres → Litres</option>
+        </select>
+      </div>
     </div>
-    <div id="results"></div>
+    <button class="primary" id="convertButton">Convert</button>
+    <p id="convertResult" aria-live="polite"></p>
+  </section>
+
+  <section id="savedPanel" class="panel hidden">
+    <div class="section-heading"><h3>🔖 Saved Pages</h3><button id="clearSaved" class="secondary">Clear all</button></div>
+    <div id="savedPages"></div>
+  </section>
+
+  <section id="studyPanel" class="panel hidden">
+    <h3>📚 Study Mode</h3>
+    <p class="small">Turns the snippets from your latest knowledge search into revision notes. These are source snippets, not AI-generated explanations.</p>
+    <div class="button-row"><button class="primary" id="makeNotes">Make revision notes</button><button class="secondary" id="copyNotes">Copy notes</button></div>
+    <textarea id="studyNotes" placeholder="Search a topic first, then make your revision notes." aria-label="Revision notes"></textarea>
+  </section>
+
+  <section id="readingPanel" class="panel hidden">
+    <h3>📖 Reading Mode</h3>
+    <p class="small">A clean reading view of the results already returned. It does not download or summarize entire external webpages.</p>
+    <div id="readingContent" class="small">Run a search first to prepare your reading view.</div>
+  </section>
+
+  <section id="discoveryPanel" class="panel hidden">
+    <h3>✨ Daily Discovery</h3>
+    <p class="small">A small collection of general-interest facts stored in this page. These are not live news or personalised predictions.</p>
+    <div id="dailyFact"></div>
+    <button class="primary" id="anotherFact">Show another fact</button>
+  </section>
+
+  <section class="results-top" id="resultsSection">
+    <div class="section-heading">
+      <div><h2 id="resultsTitle">Explore something new</h2><div id="resultCount" class="stat">Your results will appear here.</div></div>
+      <button class="secondary" id="copySearchLink" hidden>Copy search link</button>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Search categories">
+      <button class="tab active" data-tab="all" role="tab" aria-selected="true">Knowledge</button>
+      <button class="tab" data-tab="images" role="tab" aria-selected="false">Images</button>
+      <button class="tab" data-tab="videos" role="tab" aria-selected="false">Videos</button>
+    </div>
+    <div id="results" aria-live="polite"><div class="state">Type a question or topic above to get started.</div></div>
+  </section>
+
+  <section id="historySection">
+    <div class="section-heading"><h2>Recent searches</h2><button class="secondary" id="clearHistory">Clear history</button></div>
+    <div id="history" class="chips"><span class="small">Your recent searches will appear here.</span></div>
   </section>
 </main>
-
-<footer class="footer">
-  <strong>ONE Search</strong> · Explore your interests.<br>
-  Search results are provided by their identified sources.
-</footer>
+<footer>ONE Search · An independent discovery project. Search availability depends on the connected sources.</footer>
 
 <script>
 "use strict";
 
-// Existing Supabase Edge Function. Do not change unless your endpoint changes.
-const API_URL =
-  "https://dbpbkvfaxgifjeveijqf.supabase.co/functions/v1/one-search";
-
-// Public Wikimedia Commons API. No API key required.
+const API_URL = "https://dbpbkvfaxgifjeveijqf.supabase.co/functions/v1/one-search";
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 
-const form = document.getElementById("searchForm");
-const input = document.getElementById("query");
-const language = document.getElementById("language");
-const searchButton = document.getElementById("searchButton");
-const section = document.getElementById("resultsSection");
-const resultsBox = document.getElementById("results");
-const resultsTitle = document.getElementById("resultsTitle");
-const resultCount = document.getElementById("resultCount");
-const tabs = [...document.querySelectorAll("[data-tab]")];
-
+const $ = id => document.getElementById(id);
+let currentQuery = "";
+let currentResults = [];
 let activeTab = "all";
-let activeController = null;
-let searchNumber = 0;
-let lastQuery = "";
+let imageResults = [];
+let currentFactIndex = -1;
 
-function makeState(icon, title, message) {
-  const box = document.createElement("div");
-  box.className = "state";
+const facts = [
+  "A day on Venus is longer than its year: Venus rotates very slowly.",
+  "Octopuses have three hearts.",
+  "Light from the Sun takes about 8 minutes and 20 seconds to reach Earth.",
+  "The Pacific Ocean is the largest ocean on Earth.",
+  "Water can exist as a solid, liquid or gas under everyday Earth conditions.",
+  "Honeybees communicate information about food sources through movement.",
+  "The Moon is moving gradually away from Earth.",
+  "A group of flamingos is sometimes called a flamboyance."
+];
 
-  const symbol = document.createElement("div");
-  symbol.className = "state-icon";
-  symbol.textContent = icon;
-
-  const heading = document.createElement("h3");
-  heading.textContent = title;
-
-  const paragraph = document.createElement("p");
-  paragraph.textContent = message;
-
-  box.append(symbol, heading, paragraph);
-  return box;
+function safeText(value) {
+  return String(value ?? "");
 }
-
-function showState(icon, title, message) {
-  resultsBox.replaceChildren(makeState(icon, title, message));
+function escapeHTML(value) {
+  return safeText(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
 }
-
 function safeWebUrl(value) {
   try {
     const url = new URL(value);
-    if (url.protocol === "https:" || url.protocol === "http:") {
-      return url.href;
-    }
-  } catch (_) {}
-  return null;
-}
-
-function domainOf(value) {
-  try {
-    return new URL(value).hostname.replace(/^www\./, "");
-  } catch (_) {
+    return ["https:","http:"].includes(url.protocol) ? url.href : "";
+  } catch {
     return "";
   }
 }
-
-function makeLink(text, url, className = "action-link") {
-  const link = document.createElement("a");
-  link.textContent = text;
-  link.href = url;
-  link.className = className;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  return link;
+function domainOf(value) {
+  try { return new URL(value).hostname.replace(/^www\./,""); }
+  catch { return ""; }
 }
-
-function renderWebResults(items) {
-  resultsBox.replaceChildren();
-
-  const validItems = (Array.isArray(items) ? items : [])
-    .filter(item => safeWebUrl(item.url));
-
-  if (!validItems.length) {
-    showState("⌕", "No results found",
-      "Try different keywords or check your spelling.");
+function showState(message) {
+  $("results").innerHTML = `<div class="state">${escapeHTML(message)}</div>`;
+}
+function setLoading(loading) {
+  $("searchButton").disabled = loading;
+  $("searchButton").textContent = loading ? "Searching…" : "Search ↗";
+}
+function normalizeResults(data) {
+  if (!data || !Array.isArray(data.results)) return [];
+  return data.results.map(item => ({
+    title:safeText(item.title || "Untitled result"),
+    snippet:safeText(item.snippet || "No description available."),
+    url:safeWebUrl(item.url)
+  })).filter(item => item.url);
+}
+function renderWebResults(results) {
+  currentResults = results;
+  if (!results.length) {
+    showState("No results were returned. Try another search term.");
     return;
   }
-
-  validItems.forEach(item => {
-    const url = safeWebUrl(item.url);
-    const card = document.createElement("article");
-    card.className = "result";
-
-    const domain = document.createElement("div");
-    domain.className = "result-domain";
-    domain.textContent = domainOf(url);
-
-    const heading = document.createElement("h3");
-    heading.appendChild(makeLink(
-      String(item.title || "Untitled result"), url, ""
-    ));
-
-    const snippet = document.createElement("p");
-    snippet.textContent = String(item.snippet || "No description available.");
-
-    const actions = document.createElement("div");
-    actions.className = "result-actions";
-    actions.appendChild(makeLink("Open website ↗", url));
-
-    const copy = document.createElement("button");
-    copy.type = "button";
-    copy.className = "secondary-btn";
-    copy.textContent = "Copy link";
-    copy.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(url);
-        copy.textContent = "Copied!";
-      } catch (_) {
-        copy.textContent = "Copy unavailable";
-      }
+  $("results").innerHTML = results.map((item,index) => `
+    <article class="result-card">
+      <div class="domain">${escapeHTML(domainOf(item.url))}</div>
+      <h3><a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(item.title)}</a></h3>
+      <p>${escapeHTML(item.snippet)}</p>
+      <a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(item.url)}</a>
+      <div class="result-actions">
+        <button class="secondary" data-save="${index}">🔖 Save page</button>
+        <button class="secondary" data-copy-result="${index}">Copy link</button>
+      </div>
+    </article>
+  `).join("");
+  $("results").querySelectorAll("[data-save]").forEach(button => {
+    button.addEventListener("click", () => savePage(currentResults[Number(button.dataset.save)]));
+  });
+  $("results").querySelectorAll("[data-copy-result]").forEach(button => {
+    button.addEventListener("click", async () => {
+      const item = currentResults[Number(button.dataset.copyResult)];
+      await copyText(item.url, button);
     });
-    actions.appendChild(copy);
-
-    card.append(domain, heading, snippet, actions);
-    resultsBox.appendChild(card);
   });
 }
-
-async function searchWeb(query, currentSearch) {
-  const params = new URLSearchParams({
-    q: query,
-    lang: language.value
-  });
-
-  const response = await fetch(API_URL + "?" + params.toString(), {
-    method: "GET",
-    headers: { "Accept": "application/json" },
-    signal: activeController.signal
-  });
-
-  let data;
+async function searchWeb(query) {
+  showState("Searching the connected knowledge source…");
   try {
-    data = await response.json();
-  } catch (_) {
-    throw new Error("The search service returned an unreadable response.");
+    const url = new URL(API_URL);
+    url.searchParams.set("q",query);
+    url.searchParams.set("lang",$("language").value);
+    const response = await fetch(url.toString(), {method:"GET"});
+    if (!response.ok) throw new Error("Search service returned HTTP " + response.status);
+    const data = await response.json();
+    renderWebResults(normalizeResults(data));
+    $("resultCount").textContent = `${currentResults.length} knowledge result(s)`;
+    prepareStudyAndReading();
+  } catch (error) {
+    currentResults = [];
+    showState("Could not load knowledge results. Check your internet connection or the ONE Search backend, then try again.");
+    $("resultCount").textContent = "Search unavailable";
+    console.error("ONE Search error:",error);
   }
-
-  if (!response.ok) {
-    throw new Error(data.error || "The search service is unavailable.");
-  }
-
-  if (currentSearch !== searchNumber) return;
-  renderWebResults(data.results);
-
-  resultCount.textContent =
-    (Array.isArray(data.results) ? data.results.length : 0) +
-    " result(s) · " + String(data.provider || "Web search");
 }
+async function searchImages(query) {
+  showState("Looking for images on Wikimedia Commons…");
+  imageResults = [];
+  try {
+    const url = new URL(COMMONS_API);
+    url.searchParams.set("action","query");
+    url.searchParams.set("generator","search");
+    url.searchParams.set("gsrsearch",query);
+    url.searchParams.set("gsrnamespace","6");
+    url.searchParams.set("gsrlimit","18");
+    url.searchParams.set("prop","imageinfo");
+    url.searchParams.set("iiprop","url");
+    url.searchParams.set("iiurlwidth","400");
+    url.searchParams.set("format","json");
+    url.searchParams.set("origin","*");
+    const response = await fetch(url.toString());
+    if (!response.ok) throw new Error("Image search failed");
+    const data = await response.json();
+    const pages = Object.values(data.query?.pages || {});
+    imageResults = pages.map(page => ({
+      title:safeText(page.title || "Image"),
+      thumb:safeWebUrl(page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url),
+      url:safeWebUrl(page.imageinfo?.[0]?.descriptionurl)
+    })).filter(item => item.thumb && item.url);
 
-async function searchImages(query, currentSearch) {
-  showState("◌", "Finding images", "Searching Wikimedia Commons...");
-
-  const params = new URLSearchParams({
-    action: "query",
-    generator: "search",
-    gsrsearch: query + " filetype:bitmap",
-    gsrnamespace: "6",
-    gsrlimit: "24",
-    prop: "imageinfo",
-    iiprop: "url|mime",
-    iiurlwidth: "480",
-    format: "json",
-    origin: "*"
-  });
-
-  const response = await fetch(COMMONS_API + "?" + params.toString(), {
-    headers: { "Accept": "application/json" },
-    signal: activeController.signal
-  });
-
-  if (!response.ok) {
-    throw new Error("The image source is temporarily unavailable.");
-  }
-
-  const data = await response.json();
-  if (currentSearch !== searchNumber) return;
-
-  const pages = Object.values(data?.query?.pages || {});
-  const images = pages.filter(page => {
-    const info = page.imageinfo?.[0];
-    return info && info.thumburl && info.url &&
-      String(info.mime || "").startsWith("image/");
-  });
-
-  resultsBox.replaceChildren();
-
-  if (!images.length) {
-    showState("🖼️", "No images found",
-      "Try a different search term or check your connection.");
-    resultCount.textContent = "0 images · Wikimedia Commons";
-    return;
-  }
-
-  const note = document.createElement("p");
-  note.className = "image-note";
-  note.textContent =
-    "Images from Wikimedia Commons. Open an image to view its source page and check its licence.";
-  resultsBox.appendChild(note);
-
-  const grid = document.createElement("div");
-  grid.className = "image-grid";
-
-  images.forEach(page => {
-    const info = page.imageinfo[0];
-    const sourceUrl = safeWebUrl(info.descriptionurl);
-    const imageUrl = safeWebUrl(info.thumburl);
-    if (!sourceUrl || !imageUrl) return;
-
-    const card = document.createElement("a");
-    card.className = "image-card";
-    card.href = sourceUrl;
-    card.target = "_blank";
-    card.rel = "noopener noreferrer";
-
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = String(page.title || "Search image")
-      .replace(/^File:/, "").slice(0, 180);
-    img.loading = "lazy";
-    img.decoding = "async";
-
-    const title = document.createElement("span");
-    title.className = "image-title";
-    title.textContent = String(page.title || "View image").replace(/^File:/, "");
-
-    card.append(img, title);
-    grid.appendChild(card);
-  });
-
-  resultsBox.appendChild(grid);
-  resultCount.textContent = grid.children.length + " images · Wikimedia Commons";
-}
-
-/*
-  Videos play inside this page.
-  This accepts a YouTube URL or an 11-character YouTube video ID.
-  It does not fetch YouTube search listings automatically.
-*/
-function renderVideoSearch(query) {
-  resultsBox.replaceChildren();
-
-  const card = document.createElement("div");
-  card.className = "video-card";
-
-  const heading = document.createElement("h3");
-  heading.textContent = "▶ Watch a video";
-
-  const description = document.createElement("p");
-  description.textContent =
-    "Paste a YouTube video link below. If the video allows embedding, " +
-    "it will play inside ONE Search without opening the YouTube app.";
-
-  const urlInput = document.createElement("input");
-  urlInput.type = "url";
-  urlInput.className = "video-input";
-  urlInput.placeholder = "Paste YouTube video link here...";
-  urlInput.setAttribute("aria-label", "YouTube video link");
-  urlInput.autocomplete = "url";
-
-  const playButton = document.createElement("button");
-  playButton.type = "button";
-  playButton.className = "primary-btn";
-  playButton.textContent = "▶ Play here";
-
-  const playerBox = document.createElement("div");
-  playerBox.className = "player-wrap";
-
-  function playVideo() {
-    const value = urlInput.value.trim();
-    let videoId = "";
-
-    if (/^[a-zA-Z0-9_-]{11}$/.test(value)) {
-      videoId = value;
+    if (!imageResults.length) {
+      showState("No images found. Try a different search term.");
     } else {
-      try {
-        const url = new URL(value);
-        const host = url.hostname.replace(/^www\./, "");
-
-        if (host === "youtu.be") {
-          videoId = url.pathname.split("/").filter(Boolean)[0] || "";
-        } else if (
-          host === "youtube.com" ||
-          host === "m.youtube.com" ||
-          host === "youtube-nocookie.com"
-        ) {
-          if (url.pathname === "/watch") {
-            videoId = url.searchParams.get("v") || "";
-          } else {
-            const parts = url.pathname.split("/").filter(Boolean);
-            if (["embed", "shorts", "live"].includes(parts[0])) {
-              videoId = parts[1] || "";
-            }
-          }
-        }
-      } catch (_) {}
+      $("results").innerHTML = `<div id="imagesGrid">${imageResults.map(item => `
+        <div class="image-card">
+          <a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">
+            <img loading="lazy" src="${escapeHTML(item.thumb)}" alt="${escapeHTML(item.title)}">
+            ${escapeHTML(item.title)}
+          </a>
+        </div>`).join("")}</div>`;
     }
-
-    playerBox.replaceChildren();
-
-    if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-      const error = document.createElement("p");
-      error.textContent = "Please enter a valid YouTube video link.";
-      error.style.color = "#ffb4b4";
-      playerBox.appendChild(error);
+    $("resultCount").textContent = `${imageResults.length} image result(s)`;
+  } catch (error) {
+    showState("Image search could not be loaded. Please try again later.");
+    console.error(error);
+  }
+}
+function renderVideoSearch(query) {
+  $("results").innerHTML = `
+    <div class="panel">
+      <h3>Video search</h3>
+      <p class="small">This demo does not have an automatic video-search API. You can paste a YouTube video link to preview it here.</p>
+      <label for="videoUrl" class="small">YouTube video URL</label>
+      <input id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." value="">
+      <button class="primary" id="loadVideo">Load video</button>
+      <p id="videoMessage" class="small" aria-live="polite"></p>
+      <div id="videoContainer"></div>
+      <p class="small">To search videos by keyword, open <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube</a> and search for: ${escapeHTML(query)}</p>
+    </div>`;
+  $("results").querySelector("#loadVideo").addEventListener("click", () => {
+    const raw = $("videoUrl").value.trim();
+    let videoId = "";
+    try {
+      const url = new URL(raw);
+      if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") {
+        videoId = url.pathname.split("/").filter(Boolean)[0] || "";
+      } else if (["youtube.com","www.youtube.com","m.youtube.com"].includes(url.hostname)) {
+        if (url.pathname === "/watch") videoId = url.searchParams.get("v") || "";
+        else if (url.pathname.startsWith("/embed/") || url.pathname.startsWith("/shorts/")) {
+          videoId = url.pathname.split("/")[2] || "";
+        }
+      }
+    } catch {}
+    if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+      $("videoMessage").textContent = "Please enter a valid YouTube video link.";
       return;
     }
-
-    const frame = document.createElement("iframe");
-    frame.src = "https://www.youtube-nocookie.com/embed/" +
-      encodeURIComponent(videoId) + "?rel=0";
-    frame.title = "ONE Search video player";
-    frame.loading = "lazy";
-    frame.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; " +
-      "gyroscope; picture-in-picture; web-share";
-    frame.allowFullscreen = true;
-    frame.referrerPolicy = "strict-origin-when-cross-origin";
-
-    playerBox.appendChild(frame);
-    resultCount.textContent = "Embedded video player";
-  }
-
-  playButton.addEventListener("click", playVideo);
-  urlInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      playVideo();
-    }
+    $("videoMessage").textContent = "Video loaded below.";
+    $("videoContainer").innerHTML = `<iframe class="video-frame" src="https://www.youtube-nocookie.com/embed/${videoId}" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
   });
-
-  card.append(heading, description, urlInput, playButton, playerBox);
-  resultsBox.appendChild(card);
-
-  const info = document.createElement("p");
-  info.className = "image-note";
-  info.textContent =
-    "Search topic: " + query +
-    ". Automatic video listings are not connected yet.";
-  resultsBox.appendChild(info);
-
-  resultCount.textContent = "Paste a video link to play";
 }
-
-async function runSearch(value, requestedTab = activeTab) {
-  const query = String(value || "").trim();
-
+async function runSearch(query = $("query").value.trim()) {
+  query = safeText(query).trim().slice(0,150);
   if (!query) {
-    input.focus();
+    $("query").focus();
     return;
   }
-
-  if (query.length > 150) {
-    section.style.display = "block";
-    showState("!", "Search is too long", "Use 150 characters or fewer.");
-    return;
-  }
-
-  if (activeController) activeController.abort();
-  activeController = new AbortController();
-
-  const currentSearch = ++searchNumber;
-  activeTab = requestedTab;
-  lastQuery = query;
-
-  section.style.display = "block";
-  resultsTitle.textContent = "Results for “" + query + "”";
-  resultCount.textContent = "Loading...";
-  searchButton.disabled = true;
-  searchButton.textContent = "Searching…";
-
-  tabs.forEach(tab => {
-    const active = tab.dataset.tab === activeTab;
-    tab.classList.toggle("active", active);
-    tab.setAttribute("aria-pressed", String(active));
-  });
-
+  currentQuery = query;
+  $("query").value = query;
+  $("resultsTitle").textContent = `Results for “${query}”`;
+  $("copySearchLink").hidden = false;
+  saveHistory(query);
+  updateUrl();
+  setLoading(true);
   try {
-    if (activeTab === "images") {
-      await searchImages(query, currentSearch);
-    } else if (activeTab === "videos") {
+    if (activeTab === "images") await searchImages(query);
+    else if (activeTab === "videos") {
       renderVideoSearch(query);
-    } else {
-      showState("◌", "Searching", "Loading web results...");
-      await searchWeb(query, currentSearch);
-    }
-
-    if (currentSearch !== searchNumber) return;
-
-    const pageUrl = new URL(window.location.href);
-    pageUrl.searchParams.set("q", query);
-    pageUrl.searchParams.set("lang", language.value);
-    pageUrl.searchParams.set("tab", activeTab);
-    history.replaceState({}, "", pageUrl);
-
-    saveHistory(query);
-  } catch (error) {
-    if (error.name === "AbortError") return;
-    if (currentSearch !== searchNumber) return;
-
-    showState("⚠️", "Couldn't load results",
-      error.message || "Check your connection and try again.");
-    resultCount.textContent = "Search error";
+      $("resultCount").textContent = "YouTube link preview";
+    } else await searchWeb(query);
   } finally {
-    if (currentSearch === searchNumber) {
-      searchButton.disabled = false;
-      searchButton.textContent = "Search";
-    }
+    setLoading(false);
   }
+  renderHistory();
+}
+function updateUrl() {
+  const url = new URL(window.location.href);
+  if (currentQuery) url.searchParams.set("q",currentQuery);
+  url.searchParams.set("lang",$("language").value);
+  url.searchParams.set("tab",activeTab);
+  history.replaceState({}, "", url.toString());
 }
 
-// Keep a small search history on this device only.
+/* Recent search history */
 function getHistory() {
   try {
-    const value = JSON.parse(localStorage.getItem("oneSearchHistory") || "[]");
-    return Array.isArray(value) ? value : [];
-  } catch (_) {
-    return [];
-  }
+    const data = JSON.parse(localStorage.getItem("oneSearchHistory") || "[]");
+    return Array.isArray(data) ? data.filter(x => typeof x === "string").slice(0,8) : [];
+  } catch { return []; }
 }
-
 function saveHistory(query) {
+  const next = [query,...getHistory().filter(item => item.toLowerCase() !== query.toLowerCase())].slice(0,8);
+  try { localStorage.setItem("oneSearchHistory",JSON.stringify(next)); } catch {}
+}
+function renderHistory() {
+  const historyItems = getHistory();
+  $("history").innerHTML = historyItems.length
+    ? historyItems.map(item => `<button class="chip" data-history="${escapeHTML(item)}">${escapeHTML(item)}</button>`).join("")
+    : '<span class="small">Your recent searches will appear here.</span>';
+  $("history").querySelectorAll("[data-history]").forEach(button => {
+    button.addEventListener("click", () => runSearch(button.dataset.history));
+  });
+}
+
+/* Saved pages */
+function getSaved() {
   try {
-    const historyItems = getHistory().filter(item => item !== query);
-    historyItems.unshift(query);
-    localStorage.setItem("oneSearchHistory",
-      JSON.stringify(historyItems.slice(0, 8)));
-  } catch (_) {
-    // Searching still works when local storage is disabled.
+    const data = JSON.parse(localStorage.getItem("oneSearchSaved") || "[]");
+    return Array.isArray(data) ? data.filter(x => x && typeof x.url === "string") : [];
+  } catch { return []; }
+}
+function savePage(item) {
+  if (!item || !safeWebUrl(item.url)) return;
+  const saved = getSaved();
+  if (saved.some(entry => entry.url === item.url)) {
+    alert("This page is already saved.");
+    return;
+  }
+  saved.unshift({title:item.title,snippet:item.snippet,url:item.url,date:new Date().toLocaleDateString()});
+  try {
+    localStorage.setItem("oneSearchSaved",JSON.stringify(saved.slice(0,100)));
+    renderSaved();
+    alert("Page saved on this device.");
+  } catch {
+    alert("Could not save the page. Check your browser storage settings.");
+  }
+}
+function renderSaved() {
+  const saved = getSaved();
+  $("savedPages").innerHTML = saved.length ? saved.map((item,index) => `
+    <article class="saved-card" style="margin:10px 0">
+      <h3><a style="color:#c4b5fd" href="${escapeHTML(safeWebUrl(item.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(item.title)}</a></h3>
+      <p class="small">${escapeHTML(item.snippet || "")}</p>
+      <div class="button-row"><span class="small">${escapeHTML(item.date || "")}</span><button class="secondary" data-remove-saved="${index}">Remove</button></div>
+    </article>`).join("") : '<div class="state">No saved pages yet. Search for a topic and tap “Save page”.</div>';
+  $("savedPages").querySelectorAll("[data-remove-saved]").forEach(button => {
+    button.addEventListener("click", () => {
+      const items = getSaved();
+      items.splice(Number(button.dataset.removeSaved),1);
+      try { localStorage.setItem("oneSearchSaved",JSON.stringify(items)); } catch {}
+      renderSaved();
+    });
+  });
+}
+
+/* Clipboard helper */
+async function copyText(text,button) {
+  try {
+    await navigator.clipboard.writeText(text);
+    if (button) {
+      const old = button.textContent;
+      button.textContent = "Copied!";
+      setTimeout(() => button.textContent = old,1200);
+    } else alert("Copied to clipboard.");
+  } catch {
+    prompt("Copy this text:",text);
   }
 }
 
-form.addEventListener("submit", event => {
-  event.preventDefault();
-  runSearch(input.value, activeTab);
+/* Study and reading modes */
+function prepareStudyAndReading() {
+  $("studyNotes").value = "";
+  $("readingContent").innerHTML = currentResults.length
+    ? currentResults.map(item => `<article style="margin:12px 0"><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.snippet)}</p><a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">Open original source ↗</a></article>`).join("")
+    : '<p>No knowledge results available. Run a knowledge search first.</p>';
+}
+$("makeNotes").addEventListener("click", () => {
+  if (!currentResults.length) {
+    $("studyNotes").value = "Run a knowledge search first to create revision notes.";
+    return;
+  }
+  $("studyNotes").value = `REVISION NOTES\nTopic: ${currentQuery}\nDate: ${new Date().toLocaleDateString()}\n\n` +
+    currentResults.map((item,index) => `${index+1}. ${item.title}\n${item.snippet}\nSource: ${item.url}`).join("\n\n") +
+    "\n\nNote: These notes are organised from search snippets. Check the original sources for full context.";
 });
+$("copyNotes").addEventListener("click", () => copyText($("studyNotes").value));
 
-document.querySelectorAll("[data-query]").forEach(chip => {
-  chip.addEventListener("click", () => {
-    input.value = chip.dataset.query;
-    runSearch(input.value, activeTab);
-  });
-});
-
-tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    if (!lastQuery) {
-      input.focus();
-      return;
+/* Calculator: allow only basic arithmetic, never eval() */
+function calculateExpression(expression) {
+  const input = expression.replace(/[×]/g,"*").replace(/[÷]/g,"/").replace(/\s+/g,"");
+  if (!input || input.length > 100 || !/^[0-9+\-*/().%]+$/.test(input)) {
+    throw new Error("Enter a valid arithmetic expression.");
+  }
+  let position = 0;
+  function parseExpression() {
+    let value = parseTerm();
+    while (input[position] === "+" || input[position] === "-") {
+      const operator = input[position++];
+      const right = parseTerm();
+      value = operator === "+" ? value + right : value - right;
     }
-    runSearch(lastQuery, tab.dataset.tab);
-  });
-});
-
-document.getElementById("copySearchLink").addEventListener("click", async () => {
-  if (!lastQuery) return;
-
-  const url = new URL(window.location.href);
-  url.searchParams.set("q", lastQuery);
-  url.searchParams.set("lang", language.value);
-  url.searchParams.set("tab", activeTab);
-
+    return value;
+  }
+  function parseTerm() {
+    let value = parseUnary();
+    while (["*","/","%"].includes(input[position])) {
+      const operator = input[position++];
+      const right = parseUnary();
+      if ((operator === "/" || operator === "%") && right === 0) throw new Error("Cannot divide by zero.");
+      if (operator === "*") value *= right;
+      if (operator === "/") value /= right;
+      if (operator === "%") value %= right;
+    }
+    return value;
+  }
+  function parseUnary() {
+    if (input[position] === "+") { position++; return parseUnary(); }
+    if (input[position] === "-") { position++; return -parseUnary(); }
+    if (input[position] === "(") {
+      position++;
+      const value = parseExpression();
+      if (input[position] !== ")") throw new Error("Check your brackets.");
+      position++;
+      return value;
+    }
+    const match = input.slice(position).match(/^(?:\d+\.?\d*|\.\d+)/);
+    if (!match) throw new Error("Check your expression.");
+    position += match[0].length;
+    return Number(match[0]);
+  }
+  const result = parseExpression();
+  if (position !== input.length || !Number.isFinite(result)) throw new Error("Please enter a valid calculation.");
+  return result;
+}
+$("calculateButton").addEventListener("click", () => {
   try {
-    await navigator.clipboard.writeText(url.href);
-    const button = document.getElementById("copySearchLink");
-    button.textContent = "Copied!";
-    setTimeout(() => button.textContent = "Copy search link", 1400);
-  } catch (_) {
-    resultCount.textContent = "Copy unavailable in this browser.";
+    $("calcResult").textContent = "Result: " + calculateExpression($("calcInput").value);
+  } catch (error) {
+    $("calcResult").textContent = error.message;
   }
 });
+$("clearCalc").addEventListener("click", () => {
+  $("calcInput").value = "";
+  $("calcResult").textContent = "";
+});
+$("calcInput").addEventListener("keydown", event => {
+  if (event.key === "Enter") $("calculateButton").click();
+});
 
-// Restore a shared search link, if present.
-const initialParams = new URLSearchParams(window.location.search);
-const initialQuery = initialParams.get("q");
-const initialLang = initialParams.get("lang");
-const initialTab = initialParams.get("tab");
+/* Unit converter */
+$("convertButton").addEventListener("click", () => {
+  const value = Number($("convertValue").value);
+  if ($("convertValue").value.trim() === "" || !Number.isFinite(value)) {
+    $("convertResult").textContent = "Enter a valid number.";
+    return;
+  }
+  const conversions = {
+    "km-mi":[value => value*0.621371,"miles"],
+    "mi-km":[value => value/0.621371,"kilometres"],
+    "kg-lb":[value => value*2.2046226218,"pounds"],
+    "lb-kg":[value => value/2.2046226218,"kilograms"],
+    "cm-in":[value => value/2.54,"inches"],
+    "in-cm":[value => value*2.54,"centimetres"],
+    "c-f":[value => value*9/5+32,"°F"],
+    "f-c":[value => (value-32)*5/9,"°C"],
+    "km-m":[value => value*1000,"metres"],
+    "m-km":[value => value/1000,"kilometres"],
+    "l-ml":[value => value*1000,"millilitres"],
+    "ml-l":[value => value/1000,"litres"]
+  };
+  const [convert,unit] = conversions[$("convertType").value];
+  const answer = convert(value);
+  $("convertResult").textContent = `Result: ${Number(answer.toFixed(6))} ${unit}`;
+});
 
-if (initialLang === "en" || initialLang === "hi") {
-  language.value = initialLang;
+/* Daily Discovery */
+function showFact() {
+  let next = Math.floor(Math.random()*facts.length);
+  if (facts.length > 1 && next === currentFactIndex) next = (next+1)%facts.length;
+  currentFactIndex = next;
+  $("dailyFact").innerHTML = `<div class="result-card"><p>${escapeHTML(facts[next])}</p><div class="small">Fact ${next+1} of ${facts.length}</div></div>`;
 }
+$("anotherFact").addEventListener("click",showFact);
 
-if (["all", "images", "videos"].includes(initialTab)) {
-  activeTab = initialTab;
-}
+/* Panels and tabs */
+document.querySelectorAll("[data-open]").forEach(button => {
+  button.addEventListener("click", () => {
+    const panel = $(button.dataset.open);
+    const wasHidden = panel.classList.contains("hidden");
+    document.querySelectorAll(".panel").forEach(item => item.classList.add("hidden"));
+    if (wasHidden) {
+      panel.classList.remove("hidden");
+      panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+      if (panel.id === "savedPanel") renderSaved();
+      if (panel.id === "discoveryPanel" && currentFactIndex < 0) showFact();
+    }
+  });
+});
+document.querySelectorAll("[data-tab]").forEach(button => {
+  button.addEventListener("click", () => {
+    activeTab = button.dataset.tab;
+    document.querySelectorAll("[data-tab]").forEach(tab => {
+      const active = tab === button;
+      tab.classList.toggle("active",active);
+      tab.setAttribute("aria-selected",String(active));
+    });
+    updateUrl();
+    if (currentQuery) runSearch(currentQuery);
+    else if (activeTab === "videos") renderVideoSearch("");
+    else showState(activeTab === "images" ? "Search a topic to find images." : "Type a question or topic above to get started.");
+  });
+});
+$("searchForm").addEventListener("submit",event => {
+  event.preventDefault();
+  runSearch();
+});
+document.querySelectorAll("[data-query]").forEach(button => {
+  button.addEventListener("click", () => runSearch(button.dataset.query));
+});
+$("language").addEventListener("change", () => {
+  if (currentQuery && activeTab === "all") runSearch(currentQuery);
+  else updateUrl();
+});
+$("copySearchLink").addEventListener("click", () => copyText(window.location.href,$("copySearchLink")));
+$("clearHistory").addEventListener("click", () => {
+  try { localStorage.removeItem("oneSearchHistory"); } catch {}
+  renderHistory();
+});
+$("clearSaved").addEventListener("click", () => {
+  if (!confirm("Remove all saved pages from this device?")) return;
+  try { localStorage.removeItem("oneSearchSaved"); } catch {}
+  renderSaved();
+});
 
-if (initialQuery) {
-  input.value = initialQuery.slice(0, 150);
-  runSearch(input.value, activeTab);
+/* Optional browser voice recognition */
+$("voiceButton").addEventListener("click", () => {
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) {
+    alert("Voice search is not supported in this browser. Try a supported browser or type your search.");
+    return;
+  }
+  const recognition = new Recognition();
+  recognition.lang = $("language").value === "hi" ? "hi-IN" : "en-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  $("voiceButton").textContent = "Listening…";
+  recognition.onresult = event => {
+    const spoken = event.results?.[0]?.[0]?.transcript;
+    if (spoken) {
+      $("query").value = spoken.slice(0,150);
+      runSearch($("query").value);
+    }
+  };
+  recognition.onerror = () => alert("Voice input could not be captured. Please try again or type your search.");
+  recognition.onend = () => $("voiceButton").textContent = "🎙 Voice";
+  try { recognition.start(); }
+  catch { $("voiceButton").textContent = "🎙 Voice"; }
+});
+
+/* Restore a shared search URL */
+function restoreFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const query = (params.get("q") || "").slice(0,150);
+  const language = params.get("lang");
+  const tab = params.get("tab");
+  if (language === "hi" || language === "en") $("language").value = language;
+  if (["all","images","videos"].includes(tab)) {
+    activeTab = tab;
+    document.querySelectorAll("[data-tab]").forEach(button => {
+      const active = button.dataset.tab === tab;
+      button.classList.toggle("active",active);
+      button.setAttribute("aria-selected",String(active));
+    });
+  }
+  renderHistory();
+  renderSaved();
+  if (query) runSearch(query);
 }
+restoreFromUrl();
 </script>
 </body>
 </html>
