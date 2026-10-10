@@ -1,445 +1,612 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090b10">
-  <meta name="description" content="ONE Search — explore information in your own words.">
-  <title>ONE Search</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b10">
+<meta name="description" content="ONE Search — find information in your own words.">
+<title>ONE Search</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #090b10;
+  --panel: #11151e;
+  --panel2: #171c28;
+  --border: #292f40;
+  --text: #f5f6fc;
+  --muted: #a0a8bb;
+  --accent: #b6a0ff;
+  --green: #9ce5c2;
+}
 
-    :root {
-      color-scheme: dark;
-      --bg: #090b10;
-      --panel: #121620;
-      --border: #292f40;
-      --text: #f4f5fa;
-      --muted: #9ba3b7;
-      --accent: #a78bfa;
-    }
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse at 50% 0%, #252047 0%, transparent 45%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
+html { scroll-behavior: smooth; }
 
-    button, input, select { font: inherit; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% -10%, #34275e 0%, transparent 42%),
+    var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
-    button { cursor: pointer; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .65; cursor: wait; }
 
-    .topbar {
-      width: min(1100px, 92%);
-      margin: auto;
-      padding: 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
 
-    .logo {
-      font-size: 29px;
-      font-weight: 850;
-      letter-spacing: -1.5px;
-    }
+.topbar {
+  width: min(1050px, 92%);
+  margin: auto;
+  padding: 23px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
 
-    .logo span, h1 span { color: var(--accent); }
+.logo {
+  font-size: 27px;
+  font-weight: 850;
+  letter-spacing: -1.5px;
+}
 
-    .status {
-      font-size: 12px;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 30px;
-    }
+.logo span { color: var(--accent); }
 
-    main {
-      width: min(850px, 92%);
-      margin: 0 auto;
-      padding: 70px 0 50px;
-    }
+.badge {
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 7px 11px;
+  font-size: 11px;
+}
 
-    .hero {
-      text-align: center;
-      margin-bottom: 34px;
-    }
+main {
+  width: min(790px, 92%);
+  margin: auto;
+  padding: 65px 0 30px;
+}
 
-    h1 {
-      font-size: clamp(34px, 7vw, 58px);
-      letter-spacing: -2px;
-      line-height: 1.1;
-      margin: 0 0 16px;
-    }
+.hero { text-align: center; }
 
-    .subtitle {
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 560px;
-      margin: auto;
-    }
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
 
-    .search-panel {
-      padding: 10px;
-      background: rgba(18, 22, 32, .94);
-      border: 1px solid #34394b;
-      border-radius: 20px;
-      box-shadow: 0 15px 55px #00000035;
-    }
+h1 {
+  font-size: clamp(39px, 8vw, 68px);
+  line-height: 1.04;
+  letter-spacing: -3px;
+  margin: 17px 0;
+}
 
-    .search-form {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+h1 span { color: var(--accent); }
 
-    .search-icon {
-      padding-left: 12px;
-      color: var(--accent);
-      font-size: 23px;
-    }
+.subtitle {
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 530px;
+  margin: 0 auto 32px;
+  font-size: 15px;
+}
 
-    #query {
-      flex: 1;
-      min-width: 0;
-      padding: 17px 4px;
-      border: 0;
-      outline: none;
-      color: var(--text);
-      background: transparent;
-      font-size: 16px;
-    }
+.search-panel {
+  background: rgba(17, 21, 30, .96);
+  border: 1px solid #37354e;
+  border-radius: 22px;
+  padding: 9px;
+  box-shadow: 0 20px 70px #0005;
+  transition: border-color .2s;
+}
 
-    #query::placeholder { color: #7e879b; }
+.search-panel:focus-within {
+  border-color: var(--accent);
+}
 
-    .search-button {
-      border: 0;
-      background: var(--accent);
-      color: #171126;
-      padding: 14px 20px;
-      border-radius: 13px;
-      font-weight: 750;
-    }
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .search-button:hover { background: #c4b5fd; }
+.search-icon {
+  color: var(--accent);
+  padding-left: 10px;
+  font-size: 25px;
+}
 
-    button:focus-visible, input:focus-visible, select:focus-visible {
-      outline: 2px solid white;
-      outline-offset: 3px;
-    }
+#query {
+  min-width: 0;
+  flex: 1;
+  padding: 17px 5px;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+}
 
-    .tools {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 17px;
-    }
+#query::placeholder { color: #838ba0; }
 
-    #language {
-      color: var(--text);
-      background: #151925;
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 9px 12px;
-    }
+.search-button {
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #171126;
+  padding: 14px 21px;
+  font-weight: 800;
+  transition: transform .15s, background .15s;
+}
 
-    .quick-searches {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 9px;
-      margin-top: 14px;
-    }
+.search-button:hover {
+  background: #d0c2ff;
+  transform: translateY(-1px);
+}
 
-    .quick-searches button {
-      color: #c4c8d5;
-      background: #151925;
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 9px 13px;
-    }
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 15px 3px 0;
+}
 
-    .quick-searches button:hover {
-      border-color: var(--accent);
-      color: white;
-    }
+#language {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+}
 
-    .results-heading {
-      margin: 45px 0 16px;
-      font-size: 19px;
-    }
+.small-note {
+  color: var(--muted);
+  font-size: 12px;
+}
 
-    .results-box {
-      padding: 20px;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      background: #10131c;
-    }
+.quick-title {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 27px 0 12px;
+}
 
-    .hint {
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-      margin: 0;
-    }
+.quick-searches {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
 
-    #results {
-      display: grid;
-      gap: 12px;
-    }
+.chip {
+  background: #141824;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  color: #d6d9e6;
+  padding: 10px 14px;
+  transition: border-color .2s, background .2s;
+}
 
-    .result {
-      padding: 17px;
-      border: 1px solid var(--border);
-      background: #141925;
-      border-radius: 13px;
-    }
+.chip:hover {
+  border-color: var(--accent);
+  background: #211c35;
+}
 
-    .result a {
-      color: #c4b5fd;
-      font-size: 17px;
-      font-weight: 700;
-      line-height: 1.5;
-      text-decoration: none;
-    }
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 47px 0 15px;
+}
 
-    .result a:hover { text-decoration: underline; }
+h2 {
+  font-size: 19px;
+  margin: 0;
+  letter-spacing: -.4px;
+}
 
-    .result-url {
-      display: block;
-      color: #82c9a5;
-      font-size: 12px;
-      overflow-wrap: anywhere;
-      margin: 7px 0;
-    }
+#searchMessage {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
 
-    .result p {
-      color: #b8bfd0;
-      font-size: 14px;
-      line-height: 1.7;
-      margin: 0;
-    }
+.results-box {
+  border: 1px solid var(--border);
+  background: rgba(17, 21, 30, .8);
+  border-radius: 19px;
+  padding: 17px;
+}
 
-    #searchMessage {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-      text-align: center;
-      margin: 17px 0 0;
-    }
+#results {
+  display: grid;
+  gap: 12px;
+}
 
-    .footer {
-      text-align: center;
-      color: #777f92;
-      font-size: 12px;
-      line-height: 1.7;
-      padding: 35px 0 0;
-    }
+.empty-state {
+  text-align: center;
+  padding: 29px 12px;
+}
 
-    @media (max-width: 520px) {
-      main { padding-top: 45px; }
-      .topbar { padding: 18px 0; }
-      .status { font-size: 10px; }
-      .search-panel { padding: 8px; }
-      #query { font-size: 14px; }
-      .search-button { padding: 13px 12px; }
-      .results-box { padding: 12px; }
-      .result { padding: 13px; }
-    }
-  </style>
+.empty-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.result {
+  min-width: 0;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 17px;
+  overflow-wrap: anywhere;
+}
+
+.result-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.result a {
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.result a:hover { text-decoration: underline; }
+
+.result-url {
+  display: block;
+  color: var(--green);
+  font-size: 11px;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.result p {
+  color: #c0c6d5;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 9px 0 0;
+}
+
+.copy-button {
+  flex-shrink: 0;
+  color: #d8d3f2;
+  background: #222638;
+  border: 1px solid #383c50;
+  border-radius: 9px;
+  padding: 7px 10px;
+  font-size: 11px;
+}
+
+.copy-button:hover { border-color: var(--accent); }
+
+.footer {
+  color: #81899d;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.9;
+  padding: 38px 0 15px;
+}
+
+.footer strong { color: #c7c1e5; }
+
+@media (max-width: 520px) {
+  main { padding-top: 42px; }
+  .topbar { padding: 17px 0; }
+  .badge { font-size: 9px; }
+  h1 { letter-spacing: -2px; }
+  .subtitle { font-size: 14px; }
+  .search-panel { border-radius: 17px; }
+  #query { font-size: 14px; padding: 14px 2px; }
+  .search-icon { padding-left: 5px; }
+  .search-button { padding: 13px 12px; border-radius: 11px; }
+  .results-box { padding: 10px; }
+  .result { padding: 13px; }
+  .controls { align-items: flex-start; }
+}
+</style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="logo">ONE<span>.</span></div>
-    <div class="status">INDEPENDENT SEARCH PROJECT</div>
-  </header>
+<header class="topbar">
+  <div class="logo">ONE<span>.</span></div>
+  <div class="badge">SEARCH · LEARN · DISCOVER</div>
+</header>
 
-  <main>
-    <section class="hero">
-      <h1>Search beyond<br><span>limits.</span></h1>
-      <p class="subtitle">
-        Explore information and learn something new.
-        Hindi, Hinglish or English — search in your own words.
-      </p>
-    </section>
+<main>
+  <section class="hero">
+    <div class="eyebrow">One search. New possibilities.</div>
+    <h1>Curiosity has<br><span>no limits.</span></h1>
+    <p class="subtitle">
+      Apne sawaal apni language mein poochho.
+      Hindi, Hinglish ya English — explore something new.
+    </p>
+  </section>
 
-    <section class="search-panel" aria-label="Search">
-      <form class="search-form" id="oneForm">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input
-          id="query"
-          type="search"
-          placeholder="Ask or search anything..."
-          aria-label="Enter your search"
-          autocomplete="off"
-          maxlength="150"
-          required
-        >
-        <button class="search-button" id="searchButton" type="submit">
-          Search
-        </button>
-      </form>
-    </section>
+  <section class="search-panel" aria-label="ONE Search">
+    <form class="search-form" id="oneForm">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input
+        id="query"
+        type="search"
+        placeholder="Ask or search anything..."
+        aria-label="Enter your search"
+        autocomplete="off"
+        maxlength="150"
+        required
+      >
+      <button class="search-button" id="searchButton" type="submit">
+        Search ↗
+      </button>
+    </form>
+  </section>
 
-    <div class="tools">
-      <label for="language" class="hint">Language:</label>
-      <select id="language" aria-label="Search language">
-        <option value="en">English</option>
-        <option value="hi">हिन्दी</option>
-      </select>
-    </div>
+  <div class="controls">
+    <label class="small-note" for="language">Answer language</label>
+    <select id="language" aria-label="Answer language">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="hinglish">Hinglish (search in English)</option>
+    </select>
+    <span class="small-note">Fast · Simple · Lightweight</span>
+  </div>
 
-    <div class="quick-searches" aria-label="Suggested searches">
-      <button type="button" data-query="Python programming language">Python</button>
-      <button type="button" data-query="Space facts">Space facts</button>
-      <button type="button" data-query="Learn English">Learn English</button>
-    </div>
+  <p class="quick-title">TRY A SEARCH</p>
+  <div class="quick-searches">
+    <button class="chip" type="button" data-query="Python programming for beginners">⌘ Python</button>
+    <button class="chip" type="button" data-query="Interesting facts about space">✦ Space</button>
+    <button class="chip" type="button" data-query="How does artificial intelligence work">✧ AI explained</button>
+    <button class="chip" type="button" data-query="How to improve English vocabulary">↗ Learn English</button>
+  </div>
 
-    <h2 class="results-heading">Explore results</h2>
+  <div class="section-head">
+    <h2>Explore results</h2>
+    <span class="small-note">Search discoveries</span>
+  </div>
 
-    <section class="results-box" aria-label="Search results">
-      <div id="results">
+  <section class="results-box" aria-label="Search results">
+    <div id="results">
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">✳</div>
         <p class="hint">
-          Search to discover matching Wikipedia articles.
-          This first version searches Wikipedia, not the entire web.
+          Your next discovery starts here.<br>
+          Search a topic to find matching articles.
         </p>
       </div>
-      <p id="searchMessage" role="status" aria-live="polite"></p>
-    </section>
+    </div>
+    <p id="searchMessage" role="status" aria-live="polite"></p>
+  </section>
 
-    <footer class="footer">
-      ONE Search · Built for curious minds<br>
-      Results are provided by Wikipedia. Open an article to read its source.
-    </footer>
-  </main>
+  <footer class="footer">
+    <strong>ONE Search</strong> · Built for curious minds<br>
+    Search results are provided by the configured search service.
+    Check the linked sources for more details.
+  </footer>
+</main>
 
-  <script>
-    const API_URL =
-      "https://dbpbkvfaxgifjeveijqf.supabase.co/functions/v1/one-search";
+<script>
+"use strict";
 
-    const form = document.getElementById("oneForm");
-    const input = document.getElementById("query");
-    const language = document.getElementById("language");
-    const resultsBox = document.getElementById("results");
-    const message = document.getElementById("searchMessage");
-    const searchButton = document.getElementById("searchButton");
+const API_URL =
+  "https://dbpbkvfaxgifjeveijqf.supabase.co/functions/v1/one-search";
 
-    function showMessage(text) {
-      message.textContent = text;
+const form = document.getElementById("oneForm");
+const input = document.getElementById("query");
+const language = document.getElementById("language");
+const resultsBox = document.getElementById("results");
+const message = document.getElementById("searchMessage");
+const searchButton = document.getElementById("searchButton");
+
+function showMessage(text) {
+  message.textContent = text;
+}
+
+function showEmpty(title, detail) {
+  resultsBox.replaceChildren();
+
+  const box = document.createElement("div");
+  box.className = "empty-state";
+
+  const heading = document.createElement("p");
+  heading.className = "hint";
+  heading.textContent = title;
+
+  const description = document.createElement("p");
+  description.className = "hint";
+  description.textContent = detail;
+
+  box.append(heading, description);
+  resultsBox.appendChild(box);
+}
+
+async function copyText(text, button) {
+  try {
+    await navigator.clipboard.writeText(text);
+    button.textContent = "Copied!";
+  } catch (_) {
+    // Fallback for older mobile browsers and WebViews.
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+
+    let copied = false;
+    try {
+      copied = document.execCommand("copy");
+    } catch (_) {
+      copied = false;
     }
 
-    function showResults(items) {
-      resultsBox.replaceChildren();
+    area.remove();
+    button.textContent = copied ? "Copied!" : "Copy unavailable";
+  }
 
-      if (!items.length) {
-        const empty = document.createElement("p");
-        empty.className = "hint";
-        empty.textContent = "No results found. Try different words.";
-        resultsBox.appendChild(empty);
-        return;
-      }
+  setTimeout(() => {
+    button.textContent = "Copy";
+  }, 1500);
+}
 
-      items.forEach(function (item) {
-        const card = document.createElement("article");
-        card.className = "result";
+function showResults(items) {
+  resultsBox.replaceChildren();
 
-        const title = document.createElement("a");
-        title.textContent = item.title;
-        title.href = item.url;
-        title.target = "_blank";
-        title.rel = "noopener noreferrer";
+  if (!items.length) {
+    showEmpty("No results found.", "Try different keywords and search again.");
+    return;
+  }
 
-        const url = document.createElement("span");
-        url.className = "result-url";
-        url.textContent = item.url;
-
-        const snippet = document.createElement("p");
-        snippet.textContent = item.snippet;
-
-        card.append(title, url, snippet);
-        resultsBox.appendChild(card);
-      });
+  items.forEach(function (item) {
+    // Only allow valid web links.
+    let safeUrl;
+    try {
+      safeUrl = new URL(item.url);
+      if (!["https:", "http:"].includes(safeUrl.protocol)) return;
+    } catch (_) {
+      return;
     }
 
-    async function runOneSearch(value) {
-      const query = value.trim();
+    const card = document.createElement("article");
+    card.className = "result";
 
-      if (!query) {
-        input.focus();
-        return;
-      }
+    const top = document.createElement("div");
+    top.className = "result-top";
 
-      if (query.length > 150) {
-        showMessage("Please keep your search under 150 characters.");
-        return;
-      }
+    const title = document.createElement("a");
+    title.textContent = item.title || "Untitled result";
+    title.href = safeUrl.href;
+    title.target = "_blank";
+    title.rel = "noopener noreferrer";
 
-      input.value = query;
-      searchButton.disabled = true;
-      searchButton.textContent = "Searching…";
-      showMessage("Searching Wikipedia…");
+    const copy = document.createElement("button");
+    copy.className = "copy-button";
+    copy.type = "button";
+    copy.textContent = "Copy";
+    copy.setAttribute("aria-label", "Copy result link");
+    copy.addEventListener("click", () => copyText(safeUrl.href, copy));
 
-      const loading = document.createElement("p");
-      loading.className = "hint";
-      loading.textContent = "Finding useful results…";
-      resultsBox.replaceChildren(loading);
+    const url = document.createElement("span");
+    url.className = "result-url";
+    url.textContent = safeUrl.hostname;
 
-      try {
-        const url = new URL(API_URL);
-        url.searchParams.set("q", query);
-        url.searchParams.set("lang", language.value);
+    const snippet = document.createElement("p");
+    snippet.textContent = item.snippet || "Open the source to read more.";
 
-        const response = await fetch(url.toString(), {
-          method: "GET",
-          headers: { "Accept": "application/json" }
-        });
+    top.append(title, copy);
+    card.append(top, url, snippet);
+    resultsBox.appendChild(card);
+  });
 
-        const data = await response.json();
+  if (!resultsBox.children.length) {
+    showEmpty("No usable links found.", "Try another search.");
+  }
+}
 
-        if (!response.ok) {
-          throw new Error(data.error || "Search request failed.");
-        }
+async function runOneSearch(value) {
+  const query = value.trim();
 
-        showResults(Array.isArray(data.results) ? data.results : []);
-        showMessage(
-          "Source: " + (data.provider || "Wikipedia") +
-          " · " + (data.results || []).length + " results"
-        );
-      } catch (error) {
-        resultsBox.replaceChildren();
+  if (!query) {
+    input.focus();
+    return;
+  }
 
-        const errorText = document.createElement("p");
-        errorText.className = "hint";
-        errorText.textContent =
-          "Search couldn't complete. Please check your connection and try again.";
-        resultsBox.appendChild(errorText);
+  if (query.length > 150) {
+    showMessage("Keep your search under 150 characters.");
+    return;
+  }
 
-        showMessage("Search unavailable right now. Please try again.");
-        console.error("ONE Search error:", error);
-      } finally {
-        searchButton.disabled = false;
-        searchButton.textContent = "Search";
-      }
-    }
+  input.value = query;
+  searchButton.disabled = true;
+  searchButton.textContent = "Searching…";
+  showMessage("Finding results…");
 
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      runOneSearch(input.value);
+  const loading = document.createElement("p");
+  loading.className = "hint";
+  loading.textContent = "Please wait while we search…";
+  resultsBox.replaceChildren(loading);
+
+  try {
+    const url = new URL(API_URL);
+    url.searchParams.set("q", query);
+
+    // Hinglish option uses the endpoint's existing English mode.
+    const selectedLanguage =
+      language.value === "hi" ? "hi" : "en";
+    url.searchParams.set("lang", selectedLanguage);
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: { "Accept": "application/json" }
     });
 
-    document.querySelectorAll("[data-query]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        runOneSearch(button.dataset.query);
-      });
-    });
-  </script>
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Search request failed.");
+    }
+
+    const items = Array.isArray(data.results) ? data.results : [];
+    showResults(items);
+
+    showMessage(
+      (data.provider || "Search service") +
+      " · " + items.length + " result(s)"
+    );
+  } catch (error) {
+    console.error("ONE Search error:", error);
+    showEmpty(
+      "Search is temporarily unavailable.",
+      "Check your internet connection and try again."
+    );
+    showMessage("Search failed. Please try again.");
+  } finally {
+    searchButton.disabled = false;
+    searchButton.textContent = "Search ↗";
+  }
+}
+
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
+  runOneSearch(input.value);
+});
+
+document.querySelectorAll("[data-query]").forEach(function (button) {
+  button.addEventListener("click", function () {
+    input.value = button.dataset.query;
+    runOneSearch(button.dataset.query);
+  });
+});
+</script>
 </body>
 </html>
