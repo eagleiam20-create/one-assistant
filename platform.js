@@ -1,92 +1,100 @@
 
-/* ==========================================
-   ONE — Workspace Interactions
-   File: platform.js
-   Lightweight vanilla JavaScript
-   ========================================== */
-
 "use strict";
 
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) =>
-  Array.from(root.querySelectorAll(selector));
+/* ONE Platform — Search, Earn, Projects and Tools */
+
+const $ = (s, root = document) => root.querySelector(s);
+const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
 const STORAGE = {
-  activity: "one_platform_activity_v1",
-  savedJobs: "one_platform_saved_jobs_v1",
-  profile: "one_platform_profile_v1",
-  notes: "one_platform_notes_v1"
+  profile: "one_platform_profile_v2",
+  activity: "one_platform_activity_v2",
+  notes: "one_platform_notes_v2",
+  projects: "one_platform_projects_v2"
 };
 
 const section = $("#dynamicSection");
-const viewTitle = $("#viewTitle");
-const viewKicker = $("#viewKicker");
 const viewContent = $("#viewContent");
-const homeSections = [
-  $("#home"),
-  $("#workspace"),
-  $("#activity"),
-  $(".notice")
-];
 
-const safeRead = (key, fallback) => {
+function read(key, fallback) {
   try {
-    const value = localStorage.getItem(key);
-    return value === null ? fallback : JSON.parse(value);
+    const raw = localStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
   } catch {
     return fallback;
   }
-};
+}
 
-const safeWrite = (key, value) => {
+function write(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch {
-    setActivity("Storage unavailable", "Your browser could not save this data.");
     return false;
   }
-};
-
-function setActivity(title, description) {
-  $("#activityTitle").textContent = title;
-  $("#activityText").textContent = description;
-
-  safeWrite(STORAGE.activity, {
-    title,
-    description,
-    updatedAt: new Date().toISOString()
-  });
 }
 
-function restoreActivity() {
-  const saved = safeRead(STORAGE.activity, null);
-
-  if (saved && saved.title && saved.description) {
-    $("#activityTitle").textContent = saved.title;
-    $("#activityText").textContent = saved.description;
-  }
-}
-
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
+function safeText(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
-  })[char]);
+  })[c]);
 }
 
-function panel(title, description = "") {
+function activity(title, message) {
+  $("#activityTitle").textContent = title;
+  $("#activityText").textContent = message;
+  write(STORAGE.activity, { title, message });
+}
+
+function panel(title, content) {
   return `
     <article class="content-panel">
-      <h3>${escapeHTML(title)}</h3>
-      ${description ? `<p>${escapeHTML(description)}</p>` : ""}
-      <div class="panel-body"></div>
-    </article>
-  `;
+      <h3>${safeText(title)}</h3>
+      ${content}
+    </article>`;
 }
+
+/* Open actual Google results in a new tab.
+   This does not scrape Google or claim to verify results. */
+
+function googleSearch(query, type = "web") {
+  const q = String(query || "").trim();
+
+  if (!q) {
+    alert("Pehle search mein kuch likho.");
+    return;
+  }
+
+  const params = new URLSearchParams({ q });
+
+  if (type === "images") params.set("udm", "2");
+  if (type === "news") params.set("tbm", "nws");
+
+  const url = "https://www.google.com/search?" + params.toString();
+
+  window.open(url, "_blank", "noopener,noreferrer");
+  activity("Search opened", "You opened external search results.");
+}
+
+function searchBox(placeholder, buttonLabel, callbackName) {
+  return `
+    <form class="one-search-form" data-search-form="${callbackName}">
+      <label>
+        <span class="sr-only">Search query</span>
+        <input name="query" required maxlength="300"
+          placeholder="${safeText(placeholder)}">
+      </label>
+      <button class="action-button" type="submit">
+        ${safeText(buttonLabel)}
+      </button>
+    </form>`;
+}
+
+/* Navigation */
 
 function showView(name) {
   const views = {
@@ -96,14 +104,15 @@ function showView(name) {
     profile: renderProfile
   };
 
-  if (!views[name]) {
-    goHome();
-    return;
-  }
+  if (!views[name]) return goHome();
 
-  homeSections.forEach(element => {
-    if (element) element.hidden = true;
+  ["home", "workspace", "activity"].forEach(id => {
+    const el = $("#" + id);
+    if (el) el.hidden = true;
   });
+
+  const notice = $(".notice");
+  if (notice) notice.hidden = true;
 
   section.hidden = false;
   viewContent.innerHTML = "";
@@ -123,521 +132,425 @@ function showView(name) {
 function goHome() {
   section.hidden = true;
 
-  homeSections.forEach(element => {
-    if (element) element.hidden = false;
+  ["home", "workspace", "activity"].forEach(id => {
+    const el = $("#" + id);
+    if (el) el.hidden = false;
   });
+
+  const notice = $(".notice");
+  if (notice) notice.hidden = false;
 
   $$(".nav-item").forEach(item => {
     item.classList.toggle("active", item.dataset.nav === "home");
   });
 
-  $("#home").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  $("#home").scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+function addBackButton() {
+  if ($("#oneInternalBack")) return;
+
+  const button = document.createElement("button");
+  button.id = "oneInternalBack";
+  button.className = "action-button";
+  button.textContent = "← Back to ONE";
+  button.addEventListener("click", goHome);
+
+  section.insertBefore(button, section.firstChild);
+}
+
+/* ONE EARN */
 
 function renderEarn() {
-  viewKicker.textContent = "ONE EARN";
-  viewTitle.textContent = "Explore useful tasks";
+  $("#viewKicker").textContent = "ONE EARN";
+  $("#viewTitle").textContent = "Explore opportunities";
 
   viewContent.innerHTML = `
-    <div class="content-panel">
-      <span class="demo-label">DEMO EXAMPLES</span>
-      <h3>Start with a skill</h3>
-      <p>
-        These examples help you practise. They are not paid offers,
-        verified jobs or promises of income.
-      </p>
+    ${panel("Find earning opportunities", `
+      <p>Search the web for paid work and opportunities. Results are external and have not been verified by ONE.</p>
 
-      <div class="task-item">
-        <h4>01 — Write a short product description</h4>
-        <p>Practise clear writing for a sample product.</p>
-        <button class="action-button" data-task="writing">
-          Start practice
-        </button>
+      ${searchBox("e.g. beginner freelance writing opportunities", "Search web", "earn")}
+
+      <div class="quick-searches">
+        <button class="action-button" data-earn-query="beginner freelance projects for students India">Freelance projects</button>
+        <button class="action-button" data-earn-query="remote internships India official company careers">Internships</button>
+        <button class="action-button" data-earn-query="remote jobs India official employer careers">Remote jobs</button>
+        <button class="action-button" data-earn-query="online tutoring opportunities India official websites">Tutoring</button>
+        <button class="action-button" data-earn-query="beginner graphic design freelance projects">Design work</button>
+        <button class="action-button" data-earn-query="beginner web development freelance projects">Web development</button>
       </div>
+    `)}
 
-      <div class="task-item">
-        <h4>02 — Create a simple poster concept</h4>
-        <p>Plan a visual concept for a fictional local business.</p>
-        <button class="action-button" data-task="design">
-          Start practice
-        </button>
+    ${panel("Search by type", `
+      <p>Choose a category to open a targeted web search.</p>
+      <div class="quick-searches">
+        <button class="action-button" data-earn-query="paid freelance projects India">Paid projects</button>
+        <button class="action-button" data-earn-query="part time work opportunities India official employers">Part-time work</button>
+        <button class="action-button" data-earn-query="remote internships official company careers India">Internships</button>
+        <button class="action-button" data-earn-query="online writing jobs official employer India">Writing jobs</button>
+        <button class="action-button" data-earn-query="website development client projects India">Website projects</button>
+        <button class="action-button" data-earn-query="government skill training free official India">Skill training</button>
       </div>
+    `)}
 
+    ${panel("Create a practice task", `
+      <p>Use these activities to build skills. They are practice exercises, not paid jobs.</p>
       <div class="task-item">
-        <h4>03 — Organize sample information</h4>
-        <p>Practise arranging fictional data in a clean table.</p>
-        <button class="action-button" data-task="data">
-          Start practice
-        </button>
+        <h4>Write a product description</h4>
+        <p>Practise writing a clear description for a fictional product.</p>
+        <button class="action-button" data-practice="writing">Start practice</button>
       </div>
-    </div>
+      <div class="task-item">
+        <h4>Plan a simple website</h4>
+        <p>Write down the pages and features your website needs.</p>
+        <button class="action-button" data-practice="website">Start practice</button>
+      </div>
+      <div id="practiceArea"></div>
+    `)}
 
-    <div class="content-panel">
-      <h3>Your practice workspace</h3>
-      <p id="taskInstructions">
-        Select an example task to see its instructions here.
-      </p>
-
-      <label for="taskResponse">Your work</label>
-      <textarea id="taskResponse"
-        placeholder="Write your practice answer here..."></textarea>
-
-      <button class="action-button" id="saveTask">
-        Save practice locally
-      </button>
-
-      <div id="taskResult" aria-live="polite"></div>
-    </div>
-
-    <div class="content-panel">
-      <h3>Finding genuine paid work</h3>
+    ${panel("Safety before accepting work", `
       <ul>
-        <li>Build a few sample projects first.</li>
-        <li>Check the client's identity and project requirements.</li>
-        <li>Agree on payment and delivery terms before working.</li>
-        <li>Never pay a registration fee to receive a job.</li>
-        <li>If you're under 18, follow the platform's age rules and ask a trusted adult for help.</li>
+        <li>Verify the employer and original listing.</li>
+        <li>Never pay a registration fee to obtain a job.</li>
+        <li>Do not share passwords, OTPs or bank login details.</li>
+        <li>Check payment terms before agreeing to work.</li>
+        <li>If you are under 18, follow the service's age rules and involve a trusted adult where needed.</li>
       </ul>
-      <p>
-        ONE does not currently verify tasks, employ workers or send payments.
-      </p>
+      <p><strong>Important:</strong> ONE does not currently employ people, verify vacancies or process payments.</p>
+    `)}
+  `;
+
+  addBackButton();
+}
+
+function renderPractice(type) {
+  const prompts = {
+    writing: "Write 2–3 sentences describing a reusable water bottle.",
+    website: "List the pages and features for a simple personal portfolio."
+  };
+
+  $("#practiceArea").innerHTML = `
+    <div class="result-box">
+      <p>${safeText(prompts[type])}</p>
+      <label for="practiceText">Your answer</label>
+      <textarea id="practiceText" maxlength="3000"
+        placeholder="Write your practice answer..."></textarea>
+      <button class="action-button" id="savePractice">Save locally</button>
+      <p id="practiceMessage" aria-live="polite"></p>
     </div>
   `;
 
-  const instructions = {
-    writing: "Write 2–3 sentences describing a fictional reusable water bottle.",
-    design: "Describe the layout, headline and colours of a poster for a fictional bookshop.",
-    data: "Write three fictional product names and their prices in a clear, organized format."
-  };
+  $("#savePractice").addEventListener("click", () => {
+    const text = $("#practiceText").value.trim();
 
-  $$("[data-task]", viewContent).forEach(button => {
-    button.addEventListener("click", () => {
-      $("#taskInstructions").textContent =
-        instructions[button.dataset.task];
-
-      $("#taskResult").textContent = "";
-      $("#taskResponse").focus();
-      setActivity("Practice started", "You selected a ONE Earn practice example.");
-    });
-  });
-
-  $("#saveTask").addEventListener("click", () => {
-    const response = $("#taskResponse").value.trim();
-
-    if (!response) {
-      $("#taskResult").textContent = "Write something before saving.";
+    if (!text) {
+      $("#practiceMessage").textContent = "Pehle apna answer likho.";
       return;
     }
 
-    const saved = safeWrite("one_platform_task_draft_v1", {
-      response,
-      savedAt: new Date().toISOString()
-    });
+    const ok = write("one_practice_" + type, text);
 
-    $("#taskResult").textContent = saved
-      ? "Practice saved on this device. This is not a paid submission."
-      : "Could not save. Check your browser storage settings.";
+    $("#practiceMessage").textContent = ok
+      ? "Saved on this device. This is not a paid submission."
+      : "Save nahi hua. Browser storage check karo.";
 
-    if (saved) {
-      setActivity("Practice saved", "Your example task draft is stored on this device.");
-    }
+    if (ok) activity("Practice saved", "Your practice answer is stored locally.");
   });
 }
 
+/* JOBS AND PROJECTS */
+
 function renderJobs() {
-  viewKicker.textContent = "JOBS & PROJECTS";
-  viewTitle.textContent = "Plan your next step";
+  $("#viewKicker").textContent = "JOBS & PROJECTS";
+  $("#viewTitle").textContent = "Find and organize work";
 
   viewContent.innerHTML = `
-    <div class="content-panel">
-      <h3>Example project ideas</h3>
-      <p>
-        These are project ideas for practice, not verified vacancies.
-      </p>
-
-      <div class="job-item">
-        <span class="demo-label">PRACTICE IDEA</span>
-        <h4>Build a one-page website</h4>
-        <p>Practise HTML, CSS and responsive design.</p>
-        <button class="action-button" data-save-job="website">
-          Save idea
-        </button>
+    ${panel("Search opportunities", `
+      ${searchBox("Search jobs, projects or internships", "Search web", "jobs")}
+      <div class="quick-searches">
+        <button class="action-button" data-job-query="official company careers India">Company careers</button>
+        <button class="action-button" data-job-query="beginner web developer projects India">Web projects</button>
+        <button class="action-button" data-job-query="student portfolio project ideas">Portfolio ideas</button>
       </div>
+    `)}
 
-      <div class="job-item">
-        <span class="demo-label">PRACTICE IDEA</span>
-        <h4>Create a small Python tool</h4>
-        <p>Build a calculator or a simple task organizer.</p>
-        <button class="action-button" data-save-job="python">
-          Save idea
-        </button>
-      </div>
-
-      <div class="job-item">
-        <span class="demo-label">PRACTICE IDEA</span>
-        <h4>Prepare a sample design portfolio</h4>
-        <p>Show three original poster or interface concepts.</p>
-        <button class="action-button" data-save-job="design">
-          Save idea
-        </button>
-      </div>
-    </div>
-
-    <div class="content-panel">
-      <h3>Saved ideas</h3>
-      <p>Your saved ideas are stored in this browser only.</p>
-      <div id="savedJobs"></div>
-    </div>
-
-    <div class="content-panel">
-      <h3>Project planner</h3>
+    ${panel("Your project planner", `
       <label for="projectName">Project name</label>
-      <input id="projectName" maxlength="100"
-        placeholder="e.g. My first portfolio">
+      <input id="projectName" maxlength="100" placeholder="My portfolio website">
+      <label for="projectGoal">Goal and next step</label>
+      <textarea id="projectGoal" maxlength="2000" placeholder="What will you build?"></textarea>
+      <button class="action-button" id="saveProject">Save project</button>
+      <div id="projectMessage" aria-live="polite"></div>
+    `)}
 
-      <label for="projectGoal">What will you build?</label>
-      <textarea id="projectGoal" maxlength="1000"
-        placeholder="Describe your goal and next step..."></textarea>
-
-      <button class="action-button" id="saveProject">
-        Save project plan
-      </button>
-
-      <div id="projectResult" aria-live="polite"></div>
-    </div>
+    ${panel("Saved projects", `<div id="savedProjects"></div>`)}
   `;
 
-  function renderSavedJobs() {
-    const saved = safeRead(STORAGE.savedJobs, []);
-    const container = $("#savedJobs");
-
-    if (!Array.isArray(saved) || saved.length === 0) {
-      container.innerHTML = "<p>No saved ideas yet.</p>";
-      return;
-    }
-
-    const labels = {
-      website: "Build a one-page website",
-      python: "Create a small Python tool",
-      design: "Prepare a sample design portfolio"
-    };
-
-    container.innerHTML = saved.map(id => `
-      <div class="task-item">
-        <h4>${escapeHTML(labels[id] || id)}</h4>
-        <button class="action-button" data-remove-job="${escapeHTML(id)}">
-          Remove
-        </button>
-      </div>
-    `).join("");
-
-    $$("[data-remove-job]", container).forEach(button => {
-      button.addEventListener("click", () => {
-        const updated = safeRead(STORAGE.savedJobs, [])
-          .filter(id => id !== button.dataset.removeJob);
-
-        safeWrite(STORAGE.savedJobs, updated);
-        renderSavedJobs();
-        setActivity("Saved idea removed", "Your project list has been updated.");
-      });
-    });
-  }
-
-  $$("[data-save-job]", viewContent).forEach(button => {
-    button.addEventListener("click", () => {
-      const id = button.dataset.saveJob;
-      const saved = safeRead(STORAGE.savedJobs, []);
-      const list = Array.isArray(saved) ? saved : [];
-
-      if (!list.includes(id)) {
-        list.push(id);
-        safeWrite(STORAGE.savedJobs, list);
-        setActivity("Project idea saved", "You saved a project idea for later.");
-      }
-
-      renderSavedJobs();
-    });
-  });
+  addBackButton();
+  renderSavedProjects();
 
   $("#saveProject").addEventListener("click", () => {
     const name = $("#projectName").value.trim();
     const goal = $("#projectGoal").value.trim();
 
     if (!name || !goal) {
-      $("#projectResult").textContent = "Enter a project name and goal first.";
+      $("#projectMessage").textContent = "Project name aur goal dono likho.";
       return;
     }
 
-    const saved = safeWrite("one_platform_project_v1", {
+    const projects = read(STORAGE.projects, []);
+    const list = Array.isArray(projects) ? projects : [];
+
+    list.push({
+      id: Date.now(),
       name,
       goal,
-      updatedAt: new Date().toISOString()
+      createdAt: new Date().toISOString()
     });
 
-    $("#projectResult").textContent = saved
-      ? "Project plan saved on this device."
-      : "Could not save your project plan.";
+    const ok = write(STORAGE.projects, list);
 
-    if (saved) {
-      setActivity("Project plan saved", name);
+    $("#projectMessage").textContent = ok
+      ? "Project saved on this device."
+      : "Project save nahi ho paya.";
+
+    if (ok) {
+      renderSavedProjects();
+      activity("Project saved", name);
     }
   });
-
-  renderSavedJobs();
 }
 
+function renderSavedProjects() {
+  const container = $("#savedProjects");
+  if (!container) return;
+
+  const projects = read(STORAGE.projects, []);
+
+  if (!Array.isArray(projects) || projects.length === 0) {
+    container.innerHTML = "<p>No saved projects yet.</p>";
+    return;
+  }
+
+  container.innerHTML = projects.map(project => `
+    <div class="task-item">
+      <h4>${safeText(project.name)}</h4>
+      <p>${safeText(project.goal)}</p>
+      <button class="action-button" data-delete-project="${Number(project.id)}">Delete</button>
+    </div>
+  `).join("");
+
+  $$("[data-delete-project]", container).forEach(button => {
+    button.addEventListener("click", () => {
+      const id = Number(button.dataset.deleteProject);
+      const updated = read(STORAGE.projects, []).filter(p => p.id !== id);
+
+      write(STORAGE.projects, updated);
+      renderSavedProjects();
+      activity("Project removed", "Your saved project list was updated.");
+    });
+  });
+}
+
+/* TOOLS */
+
 function renderTools() {
-  viewKicker.textContent = "ONE TOOLS";
-  viewTitle.textContent = "Useful everyday tools";
+  $("#viewKicker").textContent = "ONE TOOLS";
+  $("#viewTitle").textContent = "Everyday utilities";
 
   viewContent.innerHTML = `
-    <div class="content-panel">
-      <h3>Quick calculator</h3>
-      <p>Enter two numbers and choose an operation.</p>
-
-      <label for="calcA">First number</label>
-      <input type="number" id="calcA" step="any" placeholder="e.g. 25">
-
-      <label for="calcB">Second number</label>
-      <input type="number" id="calcB" step="any" placeholder="e.g. 5">
-
-      <label for="calcOperation">Operation</label>
-      <select id="calcOperation">
+    ${panel("Calculator", `
+      <label for="numberA">First number</label>
+      <input id="numberA" type="number" step="any" placeholder="Enter number">
+      <label for="numberB">Second number</label>
+      <input id="numberB" type="number" step="any" placeholder="Enter number">
+      <label for="operation">Operation</label>
+      <select id="operation">
         <option value="add">Addition (+)</option>
-        <option value="subtract">Subtraction (−)</option>
-        <option value="multiply">Multiplication (×)</option>
-        <option value="divide">Division (÷)</option>
+        <option value="sub">Subtraction (−)</option>
+        <option value="mul">Multiplication (×)</option>
+        <option value="div">Division (÷)</option>
       </select>
+      <button class="action-button" id="calculate">Calculate</button>
+      <div class="result-box" id="calcResult" aria-live="polite">Result appears here.</div>
+    `)}
 
-      <button class="action-button" id="calculateButton">Calculate</button>
-      <div class="result-box" id="calcResult" aria-live="polite">
-        Your result will appear here.
-      </div>
-    </div>
-
-    <div class="content-panel">
-      <h3>Quick notes</h3>
-      <p>Write a reminder or idea. Notes remain in this browser.</p>
-
-      <label for="quickNotes">Your notes</label>
-      <textarea id="quickNotes" maxlength="5000"
-        placeholder="Write a note..."></textarea>
-
+    ${panel("Quick notes", `
+      <label for="notes">Your notes</label>
+      <textarea id="notes" maxlength="5000" placeholder="Write your ideas..."></textarea>
       <button class="action-button" id="saveNotes">Save notes</button>
-      <div id="notesResult" aria-live="polite"></div>
-    </div>
+      <p id="notesMessage" aria-live="polite"></p>
+    `)}
 
-    <div class="content-panel">
-      <h3>Daily checklist</h3>
-      <p>Tick an item when you finish it.</p>
-
-      <label class="checklist">
-        <input type="checkbox" data-check="learn">
-        <span>Learn something new</span>
-      </label>
-
-      <label class="checklist">
-        <input type="checkbox" data-check="build">
-        <span>Make progress on a project</span>
-      </label>
-
-      <label class="checklist">
-        <input type="checkbox" data-check="review">
-        <span>Review today's work</span>
-      </label>
-
-      <div class="result-box" id="checklistResult" aria-live="polite">
-        0 of 3 completed
-      </div>
-    </div>
+    ${panel("Search helper", `
+      <p>Search for information on the web.</p>
+      ${searchBox("What do you want to find?", "Search Google", "tools")}
+    `)}
   `;
 
-  const notes = safeRead(STORAGE.notes, "");
-  $("#quickNotes").value = typeof notes === "string" ? notes : "";
+  addBackButton();
 
-  $("#calculateButton").addEventListener("click", () => {
-    const a = $("#calcA").value.trim();
-    const b = $("#calcB").value.trim();
+  $("#notes").value = read(STORAGE.notes, "");
 
-    if (a === "" || b === "") {
-      $("#calcResult").textContent = "Enter both numbers first.";
+  $("#saveNotes").addEventListener("click", () => {
+    const ok = write(STORAGE.notes, $("#notes").value);
+    $("#notesMessage").textContent = ok
+      ? "Notes saved on this device."
+      : "Could not save notes.";
+
+    if (ok) activity("Notes saved", "Your notes were saved locally.");
+  });
+
+  $("#calculate").addEventListener("click", () => {
+    const aRaw = $("#numberA").value.trim();
+    const bRaw = $("#numberB").value.trim();
+
+    if (!aRaw || !bRaw) {
+      $("#calcResult").textContent = "Enter both numbers.";
       return;
     }
 
-    const first = Number(a);
-    const second = Number(b);
-
-    if (!Number.isFinite(first) || !Number.isFinite(second)) {
-      $("#calcResult").textContent = "Enter valid numbers.";
-      return;
-    }
-
+    const a = Number(aRaw);
+    const b = Number(bRaw);
     let result;
-    switch ($("#calcOperation").value) {
-      case "add":
-        result = first + second;
-        break;
-      case "subtract":
-        result = first - second;
-        break;
-      case "multiply":
-        result = first * second;
-        break;
-      case "divide":
-        if (second === 0) {
+
+    switch ($("#operation").value) {
+      case "add": result = a + b; break;
+      case "sub": result = a - b; break;
+      case "mul": result = a * b; break;
+      case "div":
+        if (b === 0) {
           $("#calcResult").textContent = "Cannot divide by zero.";
           return;
         }
-        result = first / second;
+        result = a / b;
         break;
-      default:
-        $("#calcResult").textContent = "Choose an operation.";
-        return;
     }
 
-    $("#calcResult").textContent = `Result: ${result}`;
-    setActivity("Calculator used", "You completed a calculation in ONE Tools.");
-  });
-
-  $("#saveNotes").addEventListener("click", () => {
-    const ok = safeWrite(STORAGE.notes, $("#quickNotes").value);
-
-    $("#notesResult").textContent = ok
-      ? "Notes saved on this device."
-      : "Could not save your notes.";
-
-    if (ok) setActivity("Notes saved", "Your notes were saved locally.");
-  });
-
-  const checkboxes = $$("[data-check]", viewContent);
-
-  function updateChecklist() {
-    const completed = checkboxes.filter(item => item.checked).length;
-
-    $("#checklistResult").textContent =
-      `${completed} of ${checkboxes.length} completed`;
-
-    if (completed > 0) {
-      setActivity(
-        "Checklist updated",
-        `You completed ${completed} of ${checkboxes.length} checklist items.`
-      );
-    }
-  }
-
-  checkboxes.forEach(item => {
-    item.addEventListener("change", updateChecklist);
+    $("#calcResult").textContent = "Result: " + result;
+    activity("Calculator used", "You completed a calculation.");
   });
 }
 
-function renderProfile() {
-  viewKicker.textContent = "YOUR PROFILE";
-  viewTitle.textContent = "Your personal space";
+/* LOCAL PROFILE */
 
-  const profile = safeRead(STORAGE.profile, { name: "You" });
-  const name = typeof profile.name === "string" ? profile.name : "You";
+function renderProfile() {
+  $("#viewKicker").textContent = "PROFILE";
+  $("#viewTitle").textContent = "Personal settings";
+
+  const profile = read(STORAGE.profile, { name: "You" });
 
   viewContent.innerHTML = `
-    <div class="content-panel">
-      <h3>Personal settings</h3>
-      <p>Your display name is saved only in this browser.</p>
+    ${panel("Display name", `
+      <label for="displayName">Your name or nickname</label>
+      <input id="displayName" maxlength="40" value="${safeText(profile.name || "You")}">
+      <button class="action-button" id="saveProfile">Save name</button>
+      <p id="profileMessage" aria-live="polite"></p>
+    `)}
 
-      <label for="profileName">Display name</label>
-      <input id="profileName" maxlength="40"
-        value="${escapeHTML(name)}">
-
-      <button class="action-button" id="saveProfile">Save profile</button>
-      <button class="action-button" id="resetActivity">Reset activity message</button>
-
-      <div id="profileResult" aria-live="polite"></div>
-    </div>
-
-    <div class="content-panel">
-      <h3>Privacy & account status</h3>
-      <p>
-        This prototype has no user login, cloud profile, verified job system
-        or payment system. Local data is specific to this browser.
-      </p>
-      <p>Do not enter passwords, financial details or sensitive personal information here.</p>
-    </div>
+    ${panel("About this prototype", `
+      <p>Profile and saved items are stored in this browser only.</p>
+      <p>There is no account system, cloud sync, verified jobs database or payment processing in this prototype.</p>
+    `)}
   `;
 
-  $("#saveProfile").addEventListener("click", () => {
-    const newName = $("#profileName").value.trim();
+  addBackButton();
 
-    if (!newName) {
-      $("#profileResult").textContent = "Enter a display name first.";
+  $("#saveProfile").addEventListener("click", () => {
+    const name = $("#displayName").value.trim();
+
+    if (!name) {
+      $("#profileMessage").textContent = "Enter a name first.";
       return;
     }
 
-    const ok = safeWrite(STORAGE.profile, { name: newName });
+    const ok = write(STORAGE.profile, { name });
 
     if (ok) {
-      $("#avatarLetter").textContent = newName.charAt(0).toUpperCase();
-      $("#profileResult").textContent = "Display name saved on this device.";
-      setActivity("Profile updated", `Your display name is ${newName}.`);
+      $("#avatarLetter").textContent = name[0].toUpperCase();
+      $("#profileMessage").textContent = "Name saved on this device.";
+      activity("Profile updated", "Your display name was updated.");
     }
   });
-
-  $("#resetActivity").addEventListener("click", () => {
-    setActivity("Your space is ready.", "Choose a module above to begin.");
-    $("#profileResult").textContent = "Activity message reset.";
-  });
 }
 
-function restoreProfile() {
-  const profile = safeRead(STORAGE.profile, { name: "You" });
-  const name = typeof profile.name === "string" ? profile.name : "You";
+/* Event delegation */
 
-  $("#avatarLetter").textContent = name.charAt(0).toUpperCase();
-}
+document.addEventListener("submit", event => {
+  const form = event.target.closest("[data-search-form]");
+  if (!form) return;
+
+  event.preventDefault();
+
+  const query = new FormData(form).get("query");
+  const type = form.dataset.searchForm;
+
+  if (type === "earn") {
+    googleSearch(query + " paid opportunities");
+  } else if (type === "jobs") {
+    googleSearch(query + " jobs projects");
+  } else {
+    googleSearch(query);
+  }
+});
+
+document.addEventListener("click", event => {
+  const earnButton = event.target.closest("[data-earn-query]");
+  const jobButton = event.target.closest("[data-job-query]");
+  const practiceButton = event.target.closest("[data-practice]");
+
+  if (earnButton) {
+    googleSearch(earnButton.dataset.earnQuery);
+  }
+
+  if (jobButton) {
+    googleSearch(jobButton.dataset.jobQuery);
+  }
+
+  if (practiceButton) {
+    renderPractice(practiceButton.dataset.practice);
+  }
+});
+
+/* Initialize */
 
 function initialize() {
   $("#footerYear").textContent = new Date().getFullYear();
 
-  restoreActivity();
-  restoreProfile();
+  const savedActivity = read(STORAGE.activity, null);
+
+  if (savedActivity) {
+    $("#activityTitle").textContent = savedActivity.title || "Welcome back";
+    $("#activityText").textContent = savedActivity.message || "Your workspace is ready.";
+  }
+
+  const profile = read(STORAGE.profile, { name: "You" });
+  $("#avatarLetter").textContent = (profile.name || "Y").charAt(0).toUpperCase();
 
   $$("[data-view]").forEach(button => {
-    button.addEventListener("click", () => {
-      showView(button.dataset.view);
-    });
+    button.addEventListener("click", () => showView(button.dataset.view));
   });
 
   $$("[data-nav]").forEach(button => {
     button.addEventListener("click", () => {
       const destination = button.dataset.nav;
-
-      if (destination === "home") {
-        goHome();
-      } else {
-        showView(destination);
-      }
+      destination === "home" ? goHome() : showView(destination);
     });
   });
 
   $("#startButton").addEventListener("click", () => {
-    $("#workspace").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+    $("#workspace").scrollIntoView({ behavior: "smooth" });
   });
 
   $("#backHome").addEventListener("click", goHome);
+  $("#profileButton").addEventListener("click", () => showView("profile"));
 
-  $("#profileButton").addEventListener("click", () => {
-    showView("profile");
-  });
-
-  // Allow browser Back to return from an opened module.
   window.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !section.hidden) {
-      goHome();
-    }
+    if (event.key === "Escape" && !section.hidden) goHome();
   });
+
+  // Restore the correct initial state.
+  section.hidden = true;
 }
 
 initialize();
