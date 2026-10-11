@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10111a">
+  <title>ONE Search — Offline</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #10111a;
+      color: #f4f4fa;
+      font: 16px system-ui, sans-serif;
+      text-align: center;
+    }
+    main { max-width: 420px; padding: 28px; }
+    h1 { color: #a99aff; }
+    p { color: #c2c3d1; line-height: 1.7; }
+    button {
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: #a99aff;
+      color: #171324;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ONE Search</h1>
+    <h2>You're offline</h2>
+    <p>
+      Internet connection nahi hai. Apne saved pages aur
+      notes ko access karne ke liye app ke available features
+      use karo. Naye web searches ke liye internet chahiye.
+    </p>
+    <button onclick="location.reload()">Try again</button>
+  </main>
+</body>
+</html>
