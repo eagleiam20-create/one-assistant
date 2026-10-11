@@ -4,212 +4,165 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080914">
-  <meta name="description" content="ONE — your everyday digital workspace for search, tools, tasks and opportunities.">
-  <title>ONE — Your Everyday Workspace</title>
-
+  <meta name="theme-color" content="#090b18">
+  <meta name="description" content="ONE — your everyday search, projects and productivity workspace.">
+  <title>ONE — Everyday Life Platform</title>
   <link rel="stylesheet" href="platform.css">
 </head>
-
 <body>
-  <div class="ambient ambient-one" aria-hidden="true"></div>
-  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
 
   <header class="topbar">
     <a href="platform.html" class="brand" aria-label="ONE home">
-      <span class="brand-mark">O</span>
+      <span class="brand-symbol">O</span>
       <span>ONE<span class="brand-dot">.</span></span>
     </a>
 
-    <div class="topbar-right">
-      <span class="status-dot"></span>
-      <span class="status-text">YOUR DIGITAL SPACE</span>
-      <button class="icon-button" id="profileButton" aria-label="Open profile">
-        <span id="avatarLetter">Y</span>
-      </button>
-    </div>
+    <button class="profile-button" id="profileButton" type="button"
+      aria-label="Open profile">
+      <span id="avatarLetter">Y</span>
+    </button>
   </header>
 
-  <main class="app-shell">
+  <main class="page-shell">
     <section class="hero" id="home">
       <div class="eyebrow">
-        <span class="eyebrow-line"></span>
-        ONE WORKSPACE
+        <span class="status-dot"></span>
+        YOUR EVERYDAY DIGITAL SPACE
       </div>
 
-      <h1>
-        One place.<br>
-        <span class="gradient-text">More possibilities.</span>
-      </h1>
+      <h1>Everything starts<br>with <span class="gradient-text">ONE.</span></h1>
 
       <p class="hero-description">
-        Search for answers, explore opportunities, complete useful tasks
-        and keep your everyday digital life organized.
+        Search smarter. Build projects. Discover opportunities.
+        Keep your everyday tools in one place.
       </p>
 
       <div class="hero-actions">
-        <button class="primary-button" id="startButton">
+        <button class="primary-button" id="startButton" type="button">
           Explore ONE <span aria-hidden="true">↗</span>
         </button>
-        <span class="micro-copy">Simple. Useful. Built for everyone.</span>
+        <a class="secondary-button" href="answer.html">
+          Open ONE Search ↗
+        </a>
       </div>
 
-      <div class="hero-orbit" aria-hidden="true">
-        <div class="orbit orbit-outer"></div>
-        <div class="orbit orbit-inner"></div>
-        <div class="orbit-core">ONE</div>
-        <span class="orbit-node node-one"></span>
-        <span class="orbit-node node-two"></span>
-        <span class="orbit-node node-three"></span>
+      <div class="hero-orb" aria-hidden="true">
+        <div class="orb-ring ring-one"></div>
+        <div class="orb-ring ring-two"></div>
+        <div class="orb-core">ONE</div>
       </div>
     </section>
 
-    <section class="quick-section" id="workspace">
+    <section class="workspace" id="workspace">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">YOUR WORKSPACE</span>
-          <h2>What do you need today?</h2>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+          <h2>What do you want to do?</h2>
         </div>
-        <span class="section-count">04 MODULES</span>
+        <span class="section-count">01 / EXPLORE</span>
       </div>
 
       <div class="module-grid">
-        <a href="answer.html" class="module-card search-card">
-          <div class="card-top">
-            <span class="module-icon">⌕</span>
-            <span class="card-arrow">↗</span>
-          </div>
-          <div class="card-content">
-            <span class="card-label">DISCOVER</span>
-            <h3>ONE Search</h3>
-            <p>Open your existing search experience and explore information.</p>
-          </div>
-          <div class="card-bottom">
-            <span>Open Search</span>
-            <span>01 / 04</span>
-          </div>
+        <a class="module-card search-card" href="answer.html">
+          <span class="card-icon">⌕</span>
+          <span class="card-tag">DISCOVER</span>
+          <h3>ONE Search</h3>
+          <p>Find information and explore the web using your existing search page.</p>
+          <span class="card-link">Start searching <span>↗</span></span>
         </a>
 
-        <button class="module-card earn-card" data-view="earn">
-          <span class="card-top">
-            <span class="module-icon">↗</span>
-            <span class="card-arrow">→</span>
-          </span>
-          <span class="card-content">
-            <span class="card-label">OPPORTUNITIES</span>
-            <h3>ONE Earn</h3>
-            <p>Explore example tasks and learn how to find legitimate paid work.</p>
-          </span>
-          <span class="card-bottom">
-            <span>Explore Tasks</span>
-            <span>02 / 04</span>
-          </span>
+        <button class="module-card earn-card" type="button" data-view="earn">
+          <span class="card-icon">↗</span>
+          <span class="card-tag">OPPORTUNITIES</span>
+          <h3>ONE Earn</h3>
+          <p>Explore project ideas and search for suitable opportunities.</p>
+          <span class="card-link">Explore Earn <span>→</span></span>
         </button>
 
-        <button class="module-card jobs-card" data-view="jobs">
-          <span class="card-top">
-            <span class="module-icon">⌘</span>
-            <span class="card-arrow">→</span>
-          </span>
-          <span class="card-content">
-            <span class="card-label">BUILD YOUR FUTURE</span>
-            <h3>Jobs & Projects</h3>
-            <p>Organize project ideas and explore career opportunities.</p>
-          </span>
-          <span class="card-bottom">
-            <span>Explore Projects</span>
-            <span>03 / 04</span>
-          </span>
+        <button class="module-card jobs-card" type="button" data-view="jobs">
+          <span class="card-icon">▤</span>
+          <span class="card-tag">BUILD</span>
+          <h3>Jobs & Projects</h3>
+          <p>Organize your ideas, plan your next project and research work.</p>
+          <span class="card-link">Open workspace <span>→</span></span>
         </button>
 
-        <button class="module-card tools-card" data-view="tools">
-          <span class="card-top">
-            <span class="module-icon">✳</span>
-            <span class="card-arrow">→</span>
-          </span>
-          <span class="card-content">
-            <span class="card-label">GET THINGS DONE</span>
-            <h3>ONE Tools</h3>
-            <p>Use lightweight tools to calculate, write notes and plan tasks.</p>
-          </span>
-          <span class="card-bottom">
-            <span>Open Tools</span>
-            <span>04 / 04</span>
-          </span>
+        <button class="module-card tools-card" type="button" data-view="tools">
+          <span class="card-icon">⌘</span>
+          <span class="card-tag">PRODUCTIVITY</span>
+          <h3>ONE Tools</h3>
+          <p>Use a calculator, save notes and quickly search for information.</p>
+          <span class="card-link">Open tools <span>→</span></span>
         </button>
       </div>
     </section>
 
-    <section class="content-section" id="dynamicSection" hidden>
-      <div class="section-heading">
-        <div>
-          <span class="section-kicker" id="viewKicker">YOUR WORKSPACE</span>
-          <h2 id="viewTitle">Explore ONE</h2>
-        </div>
-        <button class="text-button" id="backHome">← Back to home</button>
+    <section class="notice">
+      <span class="notice-icon">✦</span>
+      <div>
+        <h3>A workspace that grows with you</h3>
+        <p>
+          This is an early prototype. External search results are not verified
+          by ONE, and this version does not process payments or guarantee income.
+        </p>
       </div>
-
-      <div id="viewContent" class="dynamic-content"></div>
     </section>
 
     <section class="activity-section" id="activity">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">YOUR PROGRESS</span>
-          <h2>Small steps count.</h2>
+          <p class="eyebrow">YOUR SPACE</p>
+          <h2>Recent activity</h2>
         </div>
       </div>
 
-      <div class="activity-panel">
-        <div class="activity-symbol">✦</div>
-        <div class="activity-copy">
-          <h3 id="activityTitle">Your space is ready.</h3>
-          <p id="activityText">Choose a module above to begin. Your demo activity is stored on this device.</p>
+      <div class="activity-card">
+        <span class="activity-indicator"></span>
+        <div>
+          <h3 id="activityTitle">Welcome to ONE</h3>
+          <p id="activityText">Your workspace is ready to explore.</p>
         </div>
-        <span class="activity-badge">PERSONAL</span>
       </div>
     </section>
 
-    <section class="notice">
-      <span class="notice-icon">i</span>
-      <p>
-        <strong>Prototype notice:</strong>
-        Tasks and opportunities shown in this demo are examples, not verified jobs.
-        This website does not promise earnings or process payments. Never pay a
-        registration fee to claim a job. Verify employers before sharing personal information.
-      </p>
+    <section class="dynamic-section" id="dynamicSection" hidden>
+      <div class="section-heading dynamic-heading">
+        <div>
+          <p class="eyebrow" id="viewKicker">ONE WORKSPACE</p>
+          <h2 id="viewTitle">Your workspace</h2>
+        </div>
+      </div>
+
+      <div class="view-content" id="viewContent"></div>
     </section>
   </main>
 
   <footer class="footer">
     <a href="platform.html" class="footer-brand">ONE<span>.</span></a>
-    <span>One workspace for everyday possibilities.</span>
-    <span id="footerYear"></span>
+    <p>One place to explore, learn and build.</p>
+    <p>© <span id="footerYear"></span> ONE Prototype</p>
   </footer>
 
   <nav class="bottom-nav" aria-label="Main navigation">
-    <button class="nav-item active" data-nav="home" aria-label="Home">
+    <button class="nav-item active" type="button" data-nav="home">
       <span class="nav-icon">⌂</span>
       <span>Home</span>
     </button>
 
-    <a class="nav-item" href="answer.html" aria-label="ONE Search">
-      <span class="nav-icon">⌕</span>
-      <span>Search</span>
-    </a>
-
-    <button class="nav-item" data-nav="earn" aria-label="ONE Earn">
+    <button class="nav-item" type="button" data-nav="earn">
       <span class="nav-icon">↗</span>
       <span>Earn</span>
     </button>
 
-    <button class="nav-item" data-nav="jobs" aria-label="Jobs and projects">
-      <span class="nav-icon">⌘</span>
+    <button class="nav-item" type="button" data-nav="jobs">
+      <span class="nav-icon">▤</span>
       <span>Projects</span>
     </button>
 
-    <button class="nav-item" data-nav="tools" aria-label="ONE Tools">
-      <span class="nav-icon">✳</span>
+    <button class="nav-item" type="button" data-nav="tools">
+      <span class="nav-icon">⌘</span>
       <span>Tools</span>
     </button>
   </nav>
