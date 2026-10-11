@@ -104,12 +104,21 @@ h3{font-size:16px;margin:0 0 10px}
 .image-card a{display:block;color:var(--text);text-decoration:none;font-size:12px;padding:10px;overflow-wrap:anywhere}
 .video-frame{width:100%;aspect-ratio:16/9;border:0;border-radius:13px;background:#000;margin-top:12px}
 .stat{font-size:12px;color:var(--muted)}
+.earn-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}
+.earn-number{font-size:28px;font-weight:800;margin:8px 0;color:var(--green)}
+.earn-task{display:flex;align-items:flex-start;gap:12px;margin:10px 0}
+.earn-task input{width:20px;min-width:20px;height:20px;margin:2px 0;accent-color:var(--accent)}
+.earn-task label{flex:1;cursor:pointer;line-height:1.5}
+.earn-task.completed{opacity:.65}
+.earn-task.completed label{text-decoration:line-through}
+.earn-xp{font-size:12px;color:var(--green);white-space:nowrap}
 footer{text-align:center;padding:25px 18px 40px;color:var(--muted);font-size:12px}
 a{overflow-wrap:anywhere}
 @media(max-width:600px){
   header{padding:15px}.pill{display:none}main{margin-top:22px}
   .search-row{flex-wrap:wrap}#query{flex-basis:100%}.search-row .primary{flex:1}
-  .panel-grid{grid-template-columns:1fr}#imagesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel-grid,.earn-stats{grid-template-columns:1fr}
+  #imagesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .result-card{padding:15px}h1{letter-spacing:-1.7px}
 }
 </style>
@@ -139,7 +148,7 @@ a{overflow-wrap:anywhere}
         <option value="en">English</option>
         <option value="hi">हिन्दी</option>
       </select>
-      <span class="small">Knowledge results are currently from Wikipedia.</span>
+      <span class="small">Knowledge results are currently from the connected search service.</span>
     </div>
   </form>
 
@@ -160,6 +169,7 @@ a{overflow-wrap:anywhere}
       <button class="tool-btn" data-open="studyPanel">📚 Study Mode</button>
       <button class="tool-btn" data-open="readingPanel">📖 Reading Mode</button>
       <button class="tool-btn" data-open="discoveryPanel">✨ Daily Discovery</button>
+      <button class="tool-btn" data-open="earnPanel">💎 ONE Earn</button>
     </div>
   </section>
 
@@ -204,22 +214,67 @@ a{overflow-wrap:anywhere}
 
   <section id="studyPanel" class="panel hidden">
     <h3>📚 Study Mode</h3>
-    <p class="small">Turns the snippets from your latest knowledge search into revision notes. These are source snippets, not AI-generated explanations.</p>
+    <p class="small">Organises snippets from your latest knowledge search into revision notes. These are source snippets, not AI-generated explanations.</p>
     <div class="button-row"><button class="primary" id="makeNotes">Make revision notes</button><button class="secondary" id="copyNotes">Copy notes</button></div>
     <textarea id="studyNotes" placeholder="Search a topic first, then make your revision notes." aria-label="Revision notes"></textarea>
   </section>
 
   <section id="readingPanel" class="panel hidden">
     <h3>📖 Reading Mode</h3>
-    <p class="small">A clean reading view of the results already returned. It does not download or summarize entire external webpages.</p>
+    <p class="small">A clean reading view of the results already returned.</p>
     <div id="readingContent" class="small">Run a search first to prepare your reading view.</div>
   </section>
 
   <section id="discoveryPanel" class="panel hidden">
     <h3>✨ Daily Discovery</h3>
-    <p class="small">A small collection of general-interest facts stored in this page. These are not live news or personalised predictions.</p>
+    <p class="small">General-interest facts stored in this page. These are not live news or personalised predictions.</p>
     <div id="dailyFact"></div>
     <button class="primary" id="anotherFact">Show another fact</button>
+  </section>
+
+  <!-- ONE EARN -->
+  <section id="earnPanel" class="panel hidden">
+    <h3>💎 ONE Earn</h3>
+    <p class="small">Build useful habits, learn skills and track your progress every day.</p>
+    <p class="small">XP are in-app progress points only. They are not money and cannot be withdrawn.</p>
+
+    <div class="earn-stats">
+      <div class="result-card">
+        <div class="small">TOTAL XP</div>
+        <div class="earn-number" id="earnXP">0 XP</div>
+      </div>
+      <div class="result-card">
+        <div class="small">COMPLETED TASKS</div>
+        <div class="earn-number" id="earnCompleted">0</div>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <h3>Today's useful tasks</h3>
+      <span class="small" id="earnTaskCount">0 of 3 complete</span>
+    </div>
+
+    <div id="earnTasks"></div>
+    <p id="earnMessage" class="small" aria-live="polite"></p>
+
+    <div class="result-card" style="margin-top:16px">
+      <h3>🔔 Reminders</h3>
+      <p class="small">Reminders work while this page is open. Browser notifications need permission and may not work in every browser.</p>
+
+      <label class="small" for="earnReminder">Reminder interval</label>
+      <select id="earnReminder">
+        <option value="0">Reminders off</option>
+        <option value="30">Every 30 minutes</option>
+        <option value="60">Every 1 hour</option>
+        <option value="180">Every 3 hours</option>
+      </select>
+
+      <div class="button-row">
+        <button class="primary" id="earnTestNotification">Test notification</button>
+        <button class="secondary" id="earnReset">Reset progress</button>
+      </div>
+      <p class="small" id="earnReminderStatus" aria-live="polite"></p>
+    </div>
   </section>
 
   <section class="results-top" id="resultsSection">
@@ -240,11 +295,10 @@ a{overflow-wrap:anywhere}
     <div id="history" class="chips"><span class="small">Your recent searches will appear here.</span></div>
   </section>
 </main>
-<footer>ONE Search · An independent discovery project. Search availability depends on the connected sources.</footer>
+<footer>ONE Search · An independent discovery project. Search availability depends on connected sources.</footer>
 
 <script>
 "use strict";
-
 
 const API_URL = "https://exzhytvkbdjoscebjwpx.supabase.co/functions/v1/one-search";
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
@@ -255,6 +309,7 @@ let currentResults = [];
 let activeTab = "all";
 let imageResults = [];
 let currentFactIndex = -1;
+let earnReminderTimer = null;
 
 const facts = [
   "A day on Venus is longer than its year: Venus rotates very slowly.",
@@ -551,7 +606,7 @@ $("makeNotes").addEventListener("click", () => {
 });
 $("copyNotes").addEventListener("click", () => copyText($("studyNotes").value));
 
-/* Calculator: allow only basic arithmetic, never eval() */
+/* Calculator: safe arithmetic parser; never eval() */
 function calculateExpression(expression) {
   const input = expression.replace(/[×]/g,"*").replace(/[÷]/g,"/").replace(/\s+/g,"");
   if (!input || input.length > 100 || !/^[0-9+\-*/().%]+$/.test(input)) {
@@ -621,22 +676,21 @@ $("convertButton").addEventListener("click", () => {
     return;
   }
   const conversions = {
-    "km-mi":[value => value*0.621371,"miles"],
-    "mi-km":[value => value/0.621371,"kilometres"],
-    "kg-lb":[value => value*2.2046226218,"pounds"],
-    "lb-kg":[value => value/2.2046226218,"kilograms"],
-    "cm-in":[value => value/2.54,"inches"],
-    "in-cm":[value => value*2.54,"centimetres"],
-    "c-f":[value => value*9/5+32,"°F"],
-    "f-c":[value => (value-32)*5/9,"°C"],
-    "km-m":[value => value*1000,"metres"],
-    "m-km":[value => value/1000,"kilometres"],
-    "l-ml":[value => value*1000,"millilitres"],
-    "ml-l":[value => value/1000,"litres"]
+    "km-mi":[v => v*0.621371,"miles"],
+    "mi-km":[v => v/0.621371,"kilometres"],
+    "kg-lb":[v => v*2.2046226218,"pounds"],
+    "lb-kg":[v => v/2.2046226218,"kilograms"],
+    "cm-in":[v => v/2.54,"inches"],
+    "in-cm":[v => v*2.54,"centimetres"],
+    "c-f":[v => v*9/5+32,"°F"],
+    "f-c":[v => (v-32)*5/9,"°C"],
+    "km-m":[v => v*1000,"metres"],
+    "m-km":[v => v/1000,"kilometres"],
+    "l-ml":[v => v*1000,"millilitres"],
+    "ml-l":[v => v/1000,"litres"]
   };
   const [convert,unit] = conversions[$("convertType").value];
-  const answer = convert(value);
-  $("convertResult").textContent = `Result: ${Number(answer.toFixed(6))} ${unit}`;
+  $("convertResult").textContent = `Result: ${Number(convert(value).toFixed(6))} ${unit}`;
 });
 
 /* Daily Discovery */
@@ -647,6 +701,159 @@ function showFact() {
   $("dailyFact").innerHTML = `<div class="result-card"><p>${escapeHTML(facts[next])}</p><div class="small">Fact ${next+1} of ${facts.length}</div></div>`;
 }
 $("anotherFact").addEventListener("click",showFact);
+
+/* ONE EARN: local daily tasks and progress */
+const EARN_KEY = "oneSearchEarnProgressV1";
+const earnTasks = [
+  {id:"learn",title:"Learn for 10 minutes",description:"Read a useful article or study a topic.",xp:20},
+  {id:"practice",title:"Practise a skill",description:"Spend time coding, writing or practising another skill.",xp:25},
+  {id:"plan",title:"Plan your next day",description:"Write down one priority for tomorrow.",xp:15}
+];
+
+function localDateKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function getEarnProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(EARN_KEY) || "{}");
+    if (!saved || typeof saved !== "object" || Array.isArray(saved)) return {xp:0,completed:[],date:localDateKey(),totalCompleted:0};
+    return {
+      xp:Number.isFinite(saved.xp) && saved.xp >= 0 ? saved.xp : 0,
+      completed:Array.isArray(saved.completed) ? saved.completed.filter(id => earnTasks.some(t => t.id === id)) : [],
+      date:typeof saved.date === "string" ? saved.date : localDateKey(),
+      totalCompleted:Number.isFinite(saved.totalCompleted) && saved.totalCompleted >= 0 ? saved.totalCompleted : 0
+    };
+  } catch {
+    return {xp:0,completed:[],date:localDateKey(),totalCompleted:0};
+  }
+}
+function saveEarnProgress(progress) {
+  try {
+    localStorage.setItem(EARN_KEY,JSON.stringify(progress));
+    return true;
+  } catch {
+    $("earnMessage").textContent = "Could not save progress. Check your browser storage settings.";
+    return false;
+  }
+}
+function ensureEarnDay() {
+  let progress = getEarnProgress();
+  if (progress.date !== localDateKey()) {
+    progress.date = localDateKey();
+    progress.completed = [];
+    saveEarnProgress(progress);
+  }
+  return progress;
+}
+function renderEarn() {
+  const progress = ensureEarnDay();
+  $("earnXP").textContent = `${progress.xp} XP`;
+  $("earnCompleted").textContent = String(progress.totalCompleted);
+  $("earnTaskCount").textContent = `${progress.completed.length} of ${earnTasks.length} complete`;
+
+  $("earnTasks").innerHTML = earnTasks.map(task => {
+    const checked = progress.completed.includes(task.id);
+    return `
+      <div class="result-card earn-task ${checked ? "completed" : ""}">
+        <input type="checkbox" id="earn-${task.id}" data-earn-task="${task.id}" ${checked ? "checked" : ""} aria-label="${escapeHTML(task.title)}">
+        <label for="earn-${task.id}">
+          <strong>${escapeHTML(task.title)}</strong><br>
+          <span class="small">${escapeHTML(task.description)}</span>
+        </label>
+        <span class="earn-xp">+${task.xp} XP</span>
+      </div>`;
+  }).join("");
+
+  $("earnTasks").querySelectorAll("[data-earn-task]").forEach(input => {
+    input.addEventListener("change", () => toggleEarnTask(input.dataset.earnTask,input.checked));
+  });
+}
+function toggleEarnTask(id,checked) {
+  const task = earnTasks.find(t => t.id === id);
+  if (!task) return;
+  const progress = ensureEarnDay();
+  const alreadyDone = progress.completed.includes(id);
+
+  if (checked && !alreadyDone) {
+    progress.completed.push(id);
+    progress.xp += task.xp;
+    progress.totalCompleted += 1;
+    $("earnMessage").textContent = `Great work! ${task.xp} XP added for this task.`;
+  } else if (!checked && alreadyDone) {
+    progress.completed = progress.completed.filter(item => item !== id);
+    progress.xp = Math.max(0,progress.xp-task.xp);
+    progress.totalCompleted = Math.max(0,progress.totalCompleted-1);
+    $("earnMessage").textContent = "Task unchecked. Its XP has been removed.";
+  }
+  saveEarnProgress(progress);
+  renderEarn();
+}
+$("earnReset").addEventListener("click", () => {
+  if (!confirm("Reset all ONE Earn progress and XP stored on this device?")) return;
+  try {
+    localStorage.removeItem(EARN_KEY);
+    $("earnMessage").textContent = "Your local progress has been reset.";
+    renderEarn();
+  } catch {
+    $("earnMessage").textContent = "Could not reset progress.";
+  }
+});
+
+/* Browser notifications and page-open reminders */
+function stopEarnReminder() {
+  if (earnReminderTimer !== null) {
+    clearInterval(earnReminderTimer);
+    earnReminderTimer = null;
+  }
+}
+async function sendEarnNotification(test = false) {
+  if (!("Notification" in window)) {
+    $("earnReminderStatus").textContent = "Notifications are not supported by this browser.";
+    return;
+  }
+  if (Notification.permission === "denied") {
+    $("earnReminderStatus").textContent = "Notifications are blocked in browser settings.";
+    return;
+  }
+  if (Notification.permission === "default") {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        $("earnReminderStatus").textContent = "Notification permission was not granted.";
+        return;
+      }
+    } catch {
+      $("earnReminderStatus").textContent = "Could not request notification permission.";
+      return;
+    }
+  }
+  try {
+    new Notification(test ? "ONE Earn test" : "ONE Earn reminder", {
+      body:test ? "Notifications are working in this browser." : "Take a short break to learn, practise a skill or plan your day."
+    });
+    $("earnReminderStatus").textContent = test
+      ? "Test notification sent."
+      : "Reminder sent. Keep ONE Search open for scheduled reminders.";
+  } catch {
+    $("earnReminderStatus").textContent = "Could not display a notification.";
+  }
+}
+function setupEarnReminder() {
+  stopEarnReminder();
+  const minutes = Number($("earnReminder").value);
+  try { localStorage.setItem("oneSearchEarnReminder",String(minutes)); } catch {}
+  if (!minutes) {
+    $("earnReminderStatus").textContent = "Reminders are off.";
+    return;
+  }
+  $("earnReminderStatus").textContent = `Reminder set for every ${minutes} minute(s) while this page is open.`;
+  earnReminderTimer = setInterval(() => {
+    if (!document.hidden) sendEarnNotification(false);
+  },minutes*60*1000);
+}
+$("earnReminder").addEventListener("change",setupEarnReminder);
+$("earnTestNotification").addEventListener("click",() => sendEarnNotification(true));
 
 /* Panels and tabs */
 document.querySelectorAll("[data-open]").forEach(button => {
@@ -659,6 +866,7 @@ document.querySelectorAll("[data-open]").forEach(button => {
       panel.scrollIntoView({behavior:"smooth",block:"nearest"});
       if (panel.id === "savedPanel") renderSaved();
       if (panel.id === "discoveryPanel" && currentFactIndex < 0) showFact();
+      if (panel.id === "earnPanel") renderEarn();
     }
   });
 });
@@ -740,6 +948,14 @@ function restoreFromUrl() {
   }
   renderHistory();
   renderSaved();
+  renderEarn();
+  try {
+    const reminder = localStorage.getItem("oneSearchEarnReminder");
+    if (reminder !== null && ["0","30","60","180"].includes(reminder)) {
+      $("earnReminder").value = reminder;
+      if (Number(reminder) > 0) setupEarnReminder();
+    }
+  } catch {}
   if (query) runSearch(query);
 }
 restoreFromUrl();
