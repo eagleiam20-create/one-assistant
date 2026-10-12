@@ -1,12 +1,11 @@
 
-name: Build ONE Search APK
+name: Build ONE Android APK
 
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "android-app/**"
-      - ".github/workflows/build-one-apk.yml"
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -19,44 +18,68 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          gradle-version: "8.9"
+          node-version: "20"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install Cordova
+        run: npm install --global cordova
+
+      - name: Create Android project
+        run: |
+          cordova create android-app com.eagleiam20.one ONE
+          cd android-app
+          cordova platform add android@13.0.0
+
+      - name: Copy ONE website files
         shell: bash
         run: |
-          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager -print -quit)"
+          mkdir -p android-app/www
 
-          if [ -z "$SDKMANAGER" ]; then
-            echo "ERROR: sdkmanager not found"
-            exit 1
-          fi
+          for file in *.html *.css *.js *.json *.png *.jpg *.jpeg *.svg *.webmanifest *.ico; do
+            if [ -f "$file" ]; then
+              cp "$file" android-app/www/
+            fi
+          done
 
-          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+          for dir in assets images img css js fonts icons; do
+            if [ -d "$dir" ]; then
+              cp -R "$dir" android-app/www/
+            fi
+          done
 
-          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses || true
+          test -f platform.html
+          test -f platform.css
+          test -f platform.js
 
-          "$SDKMANAGER" --sdk_root="$SDK_ROOT" \
-            "platforms;android-35" \
-            "build-tools;35.0.0"
+          cp platform.html android-app/www/index.html
 
-      - name: Build APK
-        working-directory: android-app
-        run: gradle --no-daemon assembleDebug
+          test -f android-app/www/index.html
+          test -f android-app/www/platform.css
+          test -f android-app/www/platform.js
+
+      - name: Build debug APK
+        run: |
+          cd android-app
+          cordova build android --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ONE-Search-APK
-          path: android-app/app/build/outputs/apk/debug/app-debug.apk
+          name: ONE-Android-APK
+          path: android-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
