@@ -1,4 +1,4 @@
-
+```yaml
 name: Build ONE Android APK
 
 on:
@@ -15,35 +15,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Download repository files
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Install Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
+      # 3. Install Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
+      # 4. Setup Android SDK and install required packages
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platforms;android-35
+            build-tools;35.0.0
+            platform-tools
 
-      - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
+      # 5. Install Cordova
       - name: Install Cordova
         run: npm install --global cordova
 
+      # 6. Create Android application
       - name: Create Android project
         run: |
           cordova create android-app com.eagleiam20.one ONE
           cd android-app
           cordova platform add android@13.0.0
 
+      # 7. Copy website files into the Android app
       - name: Copy ONE website files
         shell: bash
         run: |
@@ -61,21 +70,25 @@ jobs:
             fi
           done
 
+          # Make the new platform page the app's starting page
           test -f platform.html
           test -f platform.css
           test -f platform.js
 
           cp platform.html android-app/www/index.html
 
+          # Verify essential files
           test -f android-app/www/index.html
           test -f android-app/www/platform.css
           test -f android-app/www/platform.js
 
+      # 8. Build debug APK
       - name: Build debug APK
         run: |
           cd android-app
           cordova build android --debug
 
+      # 9. Upload the generated APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -83,3 +96,4 @@ jobs:
           path: android-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+```
